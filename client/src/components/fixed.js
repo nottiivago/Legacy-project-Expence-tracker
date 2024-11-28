@@ -6,7 +6,7 @@ import { jwtDecode } from "jwt-decode";
 let expenseInitialValue = {
   tittle: "",
   amount: "",
-  //   category: "",
+  category: "fixed",  //Wahid change
   // description: "",
   // userId: "",
 };
@@ -22,26 +22,33 @@ function Fixed() {
     getExpenses();
   }, []);
 
-  const handleChange = (e) => {
-    setExpenseData({ ...expenseData, [e.target.name]: e.target.value });
-  };
+ const handleChange = (e) => {
+  const { name, value } = e.target;
+  // Convert the value to a number before setting it
+  setExpenseData({
+    ...expenseData,
+    [name]: name === "amount" ? Number(value) || 0 : value, // Ensure amount is always a number
+  });
+};
 
-  const handleEditChange = (e) => {
-    setEditingExpenseData({
-      ...editingExpenseData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  async function createNewExpense(e) {
+const handleEditChange = (e) => {
+  const { name, value } = e.target;
+  setEditingExpenseData({
+    ...editingExpenseData,
+    [name]: name === "amount" ? Number(value) || 0 : value, // Ensure amount is always a number
+  });
+};
+  async function createNewExpense(e,category) {
     try {
+        const { tittle, amount } = expenseData;
       let res = await axios.post(
         "http://localhost:8080/expenses/addNewExpense",
         expenseData
+
       );
       setExpenseData(expenseInitialValue);
-
       console.log(res.data);
+      getExpenses();
     } catch (error) {
       console.log(error);
     }
@@ -49,7 +56,7 @@ function Fixed() {
 
   async function getExpenses() {
     try {
-      let res = await axios.get(`http://localhost:8080/expenses/allExpenses`);
+      let res = await axios.get(`http://localhost:8080/expenses/allExpenses/${expenseInitialValue.category}`); //Wahid change
       setFixedExpenses(res.data);
       console.log(res.data);
     } catch (error) {
@@ -62,11 +69,12 @@ function Fixed() {
     try {
       let res = await axios.put(
         `http://localhost:8080/expenses/updateExpense/${expenseId}`,
-        expenseData
+        editingExpenseData
       );
       setEditingExpenseId(null);
       console.log(res.data);
       setEditingExpenseData(expenseInitialValue);
+      getExpenses();
     } catch (error) {
       console.log(error);
     }
@@ -78,6 +86,7 @@ function Fixed() {
         `http://localhost:8080/expenses/deleteExpense/${expenseId}`
       );
       console.log(res.data);
+      getExpenses();
     } catch (error) {
       console.log(error);
     }
@@ -90,6 +99,7 @@ function Fixed() {
       );
 
       console.log(res.data);
+      getExpenses();
     } catch (error) {
       console.log(error);
     }
@@ -101,7 +111,7 @@ function Fixed() {
         Fixed Expenses
       </h1>
       <div className="mx-auto flex items-start my-5 ">
-        <button onClick={createNewExpense} className=" ">
+        <button onClick={()=>createNewExpense("fixed")} className=" ">
           Add fixed expense:
         </button>
         <div className="inline">
@@ -115,6 +125,7 @@ function Fixed() {
           <input
             onChange={handleChange}
             placeholder="amount"
+            type="number"
             name="amount"
             value={expenseData.amount}
           />
@@ -131,6 +142,8 @@ function Fixed() {
       {/* <button onClick={getExpenses} className="mr-5 ">All fixed costs</button>
       <button className="ml-5" onClick={deleteAllExpense}>delete all</button> */}
 
+
+
       {fixedExpenses.map((x, index) => (
         <div key={index} className="flex items-center my-2">
           <ul className="flex w-full">
@@ -146,14 +159,13 @@ function Fixed() {
                   />
                 </li>
 
-                <li className="flex-1 bg-green-800 p-2 text-white">
+                <li className="flex-1 bg-green-800 p-2">
                   <input
                     onChange={handleEditChange}
                     placeholder="amount"
+                    type="number"
                     name="amount"
-                    value={editingExpenseData.amount}
-                    
-                  />
+                    value={editingExpenseData.amount}/>
                 </li>
               </>
             ) : (

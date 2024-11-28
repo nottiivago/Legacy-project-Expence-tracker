@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
+import Fixed from "./fixed";
 
 //functionality&calculation for total of each number and Income edit
 function Homepage() {
   const [income, setIncome] = useState("");
+  
 
   const handleIncomeChange = (e) => {
     setIncome(e.target.value);
@@ -97,6 +99,7 @@ function Homepage() {
           <button className="">Option1</button>
         </div>
       </div>
+
     </div>
   );
 }
