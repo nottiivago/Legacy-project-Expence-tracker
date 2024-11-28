@@ -1,13 +1,16 @@
 import React, { useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
-import Fixed from "./fixed";
+import axios from "axios";
 
-//functionality&calculation for total of each number and Income edit
+//functionality&calculation for total of each number and Income edit and update after Income Schema is created
 function Homepage() {
   const [income, setIncome] = useState("");
-  
+//   const [totals, setTotals] = useState({
+//     fixed: 0,
+//     living: 0,
+//     extra: 0, 
+//   });
 
   const handleIncomeChange = (e) => {
     setIncome(e.target.value);
@@ -15,17 +18,13 @@ function Homepage() {
 
   const navigate = useNavigate();
 
-  const handleRedirectFixed = () => {
-    navigate("/fixed");
+   const handleRedirect = (path) => {
+    navigate(path);
   };
 
-  const handleRedirectLiving = () => {
-    navigate("/living");
-  };
-
-  const handleRedirectExtra = () => {
-    navigate("/extra");
-  };
+//   const updateCategoryTotal = (category, total) => { 
+//     setTotals((prev) => ({ ...prev, [category]: total }));
+//   };
 
   return (
     <div className="App h-full px-3">
@@ -54,41 +53,41 @@ function Homepage() {
 
       <div className="mt-3 mx-auto h-[125px] border-2 border-black rounded-md max-w-[350px] sm:max-w-[500px]">
         <button
-          onClick={handleRedirectFixed}
+          onClick={() => handleRedirect("/fixed")}
           className="mx-auto flex justify-center pt-1 font-bold"
         >
           Fixed Costs
         </button>
         <h4 className="flex justify-center items-center pt-5 font-bold  text-green-800">
-          Number
+        {/* {totals.fixed} */} Number
         </h4>
       </div>
 
       <div className="mt-3 mx-auto h-[125px] border-2 border-black rounded-md max-w-[350px] sm:max-w-[500px]">
         <button
-          onClick={handleRedirectLiving}
+          onClick={() => handleRedirect("/living")}
           className="mx-auto flex justify-center pt-1 font-bold"
         >
           Living Expenses
         </button>
         <h4 className="flex justify-center items-center pt-5 font-bold  text-yellow-800">
-          Number
+        {/* {totals.living} */}Number
         </h4>
       </div>
 
       <div className="mt-3 mx-auto h-[125px] border-2 border-black rounded-md max-w-[350px] sm:max-w-[500px]">
         <button
-          onClick={handleRedirectExtra}
+          onClick={() => handleRedirect("/extra")}
           className="mx-auto flex justify-center pt-1 font-bold"
         >
           Extra
         </button>
         <h4 className="flex justify-center items-center pt-5 font-bold  text-red-800">
-          Number
+        {/* {totals.extra} */}Number
         </h4>
       </div>
 
-      <div className="mt-3 mx-auto flex justify-around max-w-[350px] sm:max-w-[500px]">
+      {/* <div className="mt-3 mx-auto flex justify-around max-w-[350px] sm:max-w-[500px]">
         <div className="rounded-full w-20 h-20 sm:w-28 sm:h-28 border-black border-2 flex justify-center items-center">
           <button className="">Option1</button>
         </div>
@@ -98,8 +97,7 @@ function Homepage() {
         <div className="rounded-full w-20 h-20 sm:w-28 sm:h-28 border-black border-2 flex justify-center items-center">
           <button className="">Option1</button>
         </div>
-      </div>
-
+      </div> */}
     </div>
   );
 }

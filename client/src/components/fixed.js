@@ -1,26 +1,30 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
+import { useLocation } from "react-router-dom";
+
 
 let expenseInitialValue = {
   tittle: "",
   amount: "",
-  category: "fixed",  //Wahid change
-  // description: "",
-  // userId: "",
+  category: "", 
 };
 
-function Fixed() {
+function Fixed({}) {
   const [expenseData, setExpenseData] = useState(expenseInitialValue);
   const [fixedExpenses, setFixedExpenses] = useState([]);
   const [editingExpenseId, setEditingExpenseId] = useState(null); //keeps track of the expense being edited
   const [editingExpenseData, setEditingExpenseData] =
     useState(expenseInitialValue);
+    
+        const location = useLocation();
+        const category = location.pathname.replace("/", ""); // Extract category from URL
 
   useEffect(() => {
     getExpenses();
-  }, []);
+ // Reset the expense data category when the category changes
+ setExpenseData((prev) => ({ ...prev, category }));
+}, [category]);
+
 
  const handleChange = (e) => {
   const { name, value } = e.target;
@@ -38,15 +42,14 @@ const handleEditChange = (e) => {
     [name]: name === "amount" ? Number(value) || 0 : value, // Ensure amount is always a number
   });
 };
-  async function createNewExpense(e,category) {
+  async function createNewExpense() {
     try {
-        const { tittle, amount } = expenseData;
-      let res = await axios.post(
+        const res = await axios.post(
         "http://localhost:8080/expenses/addNewExpense",
         expenseData
 
       );
-      setExpenseData(expenseInitialValue);
+      setExpenseData((prev) => ({ ...prev, tittle: "", amount: "" }));
       console.log(res.data);
       getExpenses();
     } catch (error) {
@@ -56,8 +59,11 @@ const handleEditChange = (e) => {
 
   async function getExpenses() {
     try {
-      let res = await axios.get(`http://localhost:8080/expenses/allExpenses/${expenseInitialValue.category}`); //Wahid change
+        const res = await axios.get(
+            `http://localhost:8080/expenses/allExpenses/${category}`
+          );
       setFixedExpenses(res.data);
+    //   const total = res.data.reduce((sum, item) => sum + item.amount, 0);
       console.log(res.data);
     } catch (error) {
       console.log(error);
@@ -67,7 +73,7 @@ const handleEditChange = (e) => {
   async function updateExpense(expenseId) {
     //this is x
     try {
-      let res = await axios.put(
+        const  res = await axios.put(
         `http://localhost:8080/expenses/updateExpense/${expenseId}`,
         editingExpenseData
       );
@@ -92,27 +98,28 @@ const handleEditChange = (e) => {
     }
   }
 
-  async function deleteAllExpense() {
-    try {
-      let res = await axios.delete(
-        `http://localhost:8080/expenses/deleteAllExpenses`
-      );
+//   async function deleteAllExpense() {
+//     try {
+//       let res = await axios.delete(
+//         `http://localhost:8080/expenses/deleteAllExpenses`
+//       );
 
-      console.log(res.data);
-      getExpenses();
-    } catch (error) {
-      console.log(error);
-    }
-  }
+//       console.log(res.data);
+//       getExpenses();
+//     } catch (error) {
+//       console.log(error);
+//     }
+//   }
 
   return (
     <>
       <h1 className="mx-auto flex justify-center mt-3 mb-5 text-xl font-bold">
-        Fixed Expenses
+      {/* {category} Expenses  */}
+      {category.charAt(0).toUpperCase() + category.slice(1)} Expenses
       </h1>
       <div className="mx-auto flex items-start my-5 ">
-        <button onClick={()=>createNewExpense("fixed")} className=" ">
-          Add fixed expense:
+      <button onClick={createNewExpense}>
+          Add {category} expense:
         </button>
         <div className="inline">
           <input
@@ -129,13 +136,6 @@ const handleEditChange = (e) => {
             name="amount"
             value={expenseData.amount}
           />
-          {/* make this category fixed by default */}
-          {/* <input
-          onChange={handleChange}
-          placeholder="category"
-          name="category"
-          value={expenseData.category}
-        /> */}
         </div>
       </div>
 
@@ -201,6 +201,7 @@ const handleEditChange = (e) => {
                     setEditingExpenseData({
                       tittle: x.tittle,
                       amount: x.amount,
+                      category,
                     });
                   }}
                 >

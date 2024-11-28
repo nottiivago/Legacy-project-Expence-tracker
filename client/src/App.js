@@ -4,6 +4,7 @@ import axios from "axios";
 import Homepage from "./components/homepage";
 import Fixed from "./components/fixed";
 
+
 function App() {
  
 
@@ -12,9 +13,9 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Homepage />} />
-          <Route path="/fixed" element={<Fixed />} />
-          <Route path="/living" element={<Fixed />} />
-          <Route path="/extra" element={<Fixed />} />
+          <Route path="/Fixed" element={<Fixed />} />
+          <Route path="/Living" element={<Fixed />} />
+          <Route path="/Extra" element={<Fixed />} />
         </Routes>
       </BrowserRouter>
     </div>  
