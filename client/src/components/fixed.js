@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
@@ -6,28 +6,40 @@ import { jwtDecode } from "jwt-decode";
 let expenseInitialValue = {
   tittle: "",
   amount: "",
-//   category: "",
+  //   category: "",
   // description: "",
   // userId: "",
 };
 
 function Fixed() {
-  const [allExpenses, setAllExpenses] = useState([]);
-  const [selectedExpense, setSelectedExpense] = useState(null);
-  const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState(expenseInitialValue);
+  const [expenseData, setExpenseData] = useState(expenseInitialValue);
+  const [fixedExpenses, setFixedExpenses] = useState([]);
+  const [editingExpenseId, setEditingExpenseId] = useState(null); //keeps track of the expense being edited
+  const [editingExpenseData, setEditingExpenseData] =
+    useState(expenseInitialValue);
+
+  useEffect(() => {
+    getExpenses();
+  }, []);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setExpenseData({ ...expenseData, [e.target.name]: e.target.value });
+  };
+
+  const handleEditChange = (e) => {
+    setEditingExpenseData({
+      ...editingExpenseData,
+      [e.target.name]: e.target.value,
+    });
   };
 
   async function createNewExpense(e) {
     try {
       let res = await axios.post(
         "http://localhost:8080/expenses/addNewExpense",
-        formData
+        expenseData
       );
-      setFormData(expenseInitialValue);
+      setExpenseData(expenseInitialValue);
 
       console.log(res.data);
     } catch (error) {
@@ -38,7 +50,7 @@ function Fixed() {
   async function getExpenses() {
     try {
       let res = await axios.get(`http://localhost:8080/expenses/allExpenses`);
-      setAllExpenses(res.data);
+      setFixedExpenses(res.data);
       console.log(res.data);
     } catch (error) {
       console.log(error);
@@ -50,11 +62,11 @@ function Fixed() {
     try {
       let res = await axios.put(
         `http://localhost:8080/expenses/updateExpense/${expenseId}`,
-        formData
+        expenseData
       );
-      setSelectedExpense(res.data);
+      setEditingExpenseId(null);
       console.log(res.data);
-      setFormData(expenseInitialValue);
+      setEditingExpenseData(expenseInitialValue);
     } catch (error) {
       console.log(error);
     }
@@ -86,81 +98,115 @@ function Fixed() {
 
   return (
     <>
+      <h1 className="mx-auto flex justify-center mt-3 mb-5 text-xl font-bold">
+        Fixed Expenses
+      </h1>
       <div className="mx-auto flex items-start my-5 ">
-        <button onClick={createNewExpense} className=" ">Add fixed expense:</button>
+        <button onClick={createNewExpense} className=" ">
+          Add fixed expense:
+        </button>
         <div className="inline">
-        <input
-          onChange={handleChange}
-          placeholder="tittle"
-          name="tittle"
-          value={formData.tittle}
-          className="ml-5"
-        />
-        <input
-          onChange={handleChange}
-          placeholder="amount"
-          name="amount"
-          value={formData.amount}
-        />
-        {/* make this category fixed by default */}
-        {/* <input
+          <input
+            onChange={handleChange}
+            placeholder="tittle"
+            name="tittle"
+            value={expenseData.tittle}
+            className="ml-5"
+          />
+          <input
+            onChange={handleChange}
+            placeholder="amount"
+            name="amount"
+            value={expenseData.amount}
+          />
+          {/* make this category fixed by default */}
+          {/* <input
           onChange={handleChange}
           placeholder="category"
           name="category"
-          value={formData.category}
+          value={expenseData.category}
         /> */}
         </div>
       </div>
 
-      <button onClick={getExpenses} className="mr-5 ">All fixed costs</button>
-      <button className="ml-5" onClick={deleteAllExpense}>delete all</button>
-      <div>
-        {allExpenses.map((x, index) => (
-          <div
-            key={index}
-            className="w-[500px] border-2 border-black h-[200px]">
-            <ul>
-              <ol>{x.tittle}</ol>
-              <ol>{x.amount}</ol>
-              {/* <ol>{x.category}</ol> */}
-            </ul>
-            <button className="my-5" onClick={() => setIsEditing(!isEditing)}>
-              Edit
-            </button>
-            {isEditing && (
-              <div className="w-500px">
-                <input
-                  onChange={handleChange}
-                  placeholder="Tittle"
-                  name="tittle"
-                  value={formData.tittle}
-                />
-                <input
-                  onChange={handleChange}
-                  placeholder="Amount"
-                  name="amount"
-                  value={formData.amount}
-                />
-                {/* <input
-                  onChange={handleChange}
-                  placeholder="Category"
-                  name="category"
-                  value={formData.category}
-                /> */}
-                <button className="mr-3" onClick={() => updateExpense(x._id)}>
-                  save
-                </button>
-                <button className="mr-3" onClick={() => setIsEditing(false)}>
-                  cancel
-                </button>
-                <button className="mr-3" onClick={() => deleteExpense(x._id)}>
-                  delete
-                </button>
-              </div>
+      {/* <button onClick={getExpenses} className="mr-5 ">All fixed costs</button>
+      <button className="ml-5" onClick={deleteAllExpense}>delete all</button> */}
+
+      {fixedExpenses.map((x, index) => (
+        <div key={index} className="flex items-center my-2">
+          <ul className="flex w-full">
+            {editingExpenseId === x._id ? (
+              <>
+                 <li className="flex-1 p-2 bg-green-700">
+                  <input
+                    onChange={handleEditChange}
+                    placeholder="tittle"
+                    name="tittle"
+                    value={editingExpenseData.tittle}
+                    
+                  />
+                </li>
+                <li className="flex-1 bg-green-800 p-2 text-white">
+                  <input
+                    onChange={handleEditChange}
+                    placeholder="amount"
+                    name="amount"
+                    value={editingExpenseData.amount}
+                    
+                  />
+                </li>
+              </>
+            ) : (
+              <>
+                <li className="flex-1 p-2 bg-green-700">tittle: {x.tittle}</li>
+                <li className="flex-1 bg-green-800 p-2 text-white">
+                  Cost: {x.amount}
+                </li>
+              </>
             )}
-          </div>
-        ))}
-      </div>
+            {editingExpenseId === x._id ? (
+              <>
+                <button
+                  className="my-1 mx-2"
+                  onClick={() => updateExpense(x._id)}
+                >
+                  Save
+                </button>
+               <button
+                  className="p-2 bg-red-500 text-white"
+                  onClick={() => setEditingExpenseId(null)}
+                >
+                  Cancel
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  className="my-1 mx-2"
+                  onClick={() => {
+                    console.log("Editing:", x);
+                    setEditingExpenseId(x._id);
+                    setEditingExpenseData({
+                      tittle: x.tittle,
+                      amount: x.amount,
+                    });
+                  }}
+                >
+                  Edit
+                </button>
+                <button
+                  className="p-2 bg-red-500 text-white"
+                  onClick={() => deleteExpense(x._id)}
+                >
+                  Delete
+                </button>
+              </>
+            )}
+          </ul>
+        </div>
+      ))}
+
+      
     </>
   );
 }
