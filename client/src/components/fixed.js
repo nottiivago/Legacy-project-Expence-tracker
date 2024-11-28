@@ -77,7 +77,6 @@ function Fixed() {
       let res = await axios.delete(
         `http://localhost:8080/expenses/deleteExpense/${expenseId}`
       );
-
       console.log(res.data);
     } catch (error) {
       console.log(error);
@@ -146,6 +145,7 @@ function Fixed() {
                     
                   />
                 </li>
+
                 <li className="flex-1 bg-green-800 p-2 text-white">
                   <input
                     onChange={handleEditChange}
