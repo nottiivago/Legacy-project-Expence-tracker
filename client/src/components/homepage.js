@@ -15,15 +15,55 @@ function Homepage() {
 
   async function fetchCategoryTotals() {
     try {
-      const fixedRes = await axios.get("http://localhost:8080/expenses/allExpenses/fixed");
-      const livingRes = await axios.get("http://localhost:8080/expenses/allExpenses/living");
-      const extraRes = await axios.get("http://localhost:8080/expenses/allExpenses/extra");
-      const incomeRes = await axios.get("http://localhost:8080/expenses/allExpenses/income");
+      const fixedRes = await axios.get(
+        "http://localhost:8080/expenses/allExpenses/fixed",
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      const livingRes = await axios.get(
+        "http://localhost:8080/expenses/allExpenses/living",
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      const extraRes = await axios.get(
+        "http://localhost:8080/expenses/allExpenses/extra",
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      const incomeRes = await axios.get(
+        "http://localhost:8080/expenses/allExpenses/income",
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
 
-      const fixedTotal = fixedRes.data.reduce((sum, item) => sum + Number(item.amount), 0);
-      const livingTotal = livingRes.data.reduce((sum, item) => sum + Number(item.amount), 0);
-      const extraTotal = extraRes.data.reduce((sum, item) => sum + Number(item.amount), 0);
-      const incomeTotal = incomeRes.data.reduce((sum, item) => sum + Number(item.amount), 0);
+      const fixedTotal = fixedRes.data.reduce(
+        (sum, item) => sum + Number(item.amount),
+        0
+      );
+      const livingTotal = livingRes.data.reduce(
+        (sum, item) => sum + Number(item.amount),
+        0
+      );
+      const extraTotal = extraRes.data.reduce(
+        (sum, item) => sum + Number(item.amount),
+        0
+      );
+      const incomeTotal = incomeRes.data.reduce(
+        (sum, item) => sum + Number(item.amount),
+        0
+      );
 
       setFixedTotal(fixedTotal);
       setLivingTotal(livingTotal);
@@ -34,22 +74,32 @@ function Homepage() {
     }
   }
 
-//   const handleIncomeChange = (e) => {
-//     setIncome(e.target.value);
-//   };
+  //   const handleIncomeChange = (e) => {
+  //     setIncome(e.target.value);
+  //   };
 
   const navigate = useNavigate();
 
-   const handleRedirect = (path) => {
+  const handleRedirect = (path) => {
     navigate(path);
   };
+  const handleLogOut = () => {
+    localStorage.removeItem("token");
+    navigate("/login");
+  };
 
-//   const updateCategoryTotal = (category, total) => { 
-//     setTotals((prev) => ({ ...prev, [category]: total }));
-//   };
+  //   const updateCategoryTotal = (category, total) => {
+  //     setTotals((prev) => ({ ...prev, [category]: total }));
+  //   };
 
   return (
     <div className="App h-full px-3">
+      <button
+        onClick={handleLogOut}
+        className="pl-2 flex justify-center text-xl font-bold"
+      >
+        Log out
+      </button>
       <div className="mt-5 mx-auto h-full border-2 border-black rounded-md max-w-[350px] sm:max-w-[500px]">
         <h1 className=" pl-2 flex justify-start text-xl font-bold  ">
           <span className=" border-2 border-green-400">Cash Over</span>flow
@@ -62,9 +112,11 @@ function Homepage() {
 
       <div className="mt-3 mx-auto flex justify-center h-full border-2 border-green-500 rounded-md max-w-[350px] sm:max-w-[500px]  text-green-800">
         <button
-        onClick={() => handleRedirect("/income")}
-        className="pl-2 flex justify-center text-xl font-bold">
-          Income:{incomeTotal}</button> 
+          onClick={() => handleRedirect("/income")}
+          className="pl-2 flex justify-center text-xl font-bold"
+        >
+          Income:{incomeTotal}
+        </button>
       </div>
 
       <div className="mt-3 mx-auto h-[125px] border-2 border-black rounded-md max-w-[350px] sm:max-w-[500px]">
@@ -75,7 +127,7 @@ function Homepage() {
           Fixed Costs
         </button>
         <h4 className="flex justify-center items-center pt-5 font-bold  text-green-800">
-        {fixedTotal} 
+          {fixedTotal}
         </h4>
       </div>
 
@@ -87,7 +139,7 @@ function Homepage() {
           Living Expenses
         </button>
         <h4 className="flex justify-center items-center pt-5 font-bold  text-yellow-800">
-        {livingTotal}
+          {livingTotal}
         </h4>
       </div>
 
@@ -99,7 +151,7 @@ function Homepage() {
           Extra
         </button>
         <h4 className="flex justify-center items-center pt-5 font-bold  text-red-800">
-        {extraTotal}
+          {extraTotal}
         </h4>
       </div>
 

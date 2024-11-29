@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 let expenseInitialValue = {
   tittle: "",
@@ -11,22 +12,21 @@ let expenseInitialValue = {
 // let totalInitialValue = {
 //     fixed: 0,
 //     living: 0,
-//     extra: 0, 
+//     extra: 0,
 //     income: 0,
 //     savings: 0,
 //   }
-
 
 function Fixed({}) {
   const [expenseData, setExpenseData] = useState(expenseInitialValue);
   const [categoryExpenses, setCategoryExpenses] = useState([]);
   const [editingExpenseId, setEditingExpenseId] = useState(null); //monitors the expense in edit mode by keeping track of the ID
-  const [editingExpenseData, setEditingExpenseData] = useState(expenseInitialValue); // holds the data of the expense being edited {title:, amount: etc}
-  const [categoryTotal, setCategoryTotal] = useState(0); 
-
-
+  const [editingExpenseData, setEditingExpenseData] =
+    useState(expenseInitialValue); // holds the data of the expense being edited {title:, amount: etc}
+  const [categoryTotal, setCategoryTotal] = useState(0);
 
   const location = useLocation();
+  const navigate = useNavigate();
   const category = location.pathname.replace("/", ""); // Extract category from URL
 
   useEffect(() => {
@@ -34,7 +34,6 @@ function Fixed({}) {
     calculateCategoryTotal();
     // Resets expense data category when the category changes, ensures the category is always up to date
     setExpenseData((prev) => ({ ...prev, category }));
-    
   }, [category]);
 
   const handleChange = (e) => {
@@ -58,7 +57,12 @@ function Fixed({}) {
     try {
       const res = await axios.post(
         "http://localhost:8080/expenses/addNewExpense",
-        expenseData
+        expenseData,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
       );
       setExpenseData((prev) => ({ ...prev, tittle: "", amount: "" }));
       console.log(res.data);
@@ -69,26 +73,37 @@ function Fixed({}) {
     }
   }
 
-  async function getExpenses() {
+  async function getExpenses(z) {
     try {
       const res = await axios.get(
-        `http://localhost:8080/expenses/allExpenses/${category}`
+        `http://localhost:8080/expenses/allExpenses/${category}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
       );
       setCategoryExpenses(res.data);
       //   const total = res.data.reduce((sum, item) => sum + item.amount, 0);
       console.log(res.data);
-    //   calculateCategoryTotal(); // Update the total after fetching expenses (I think not needed)
+      //   calculateCategoryTotal(); // Update the total after fetching expenses (I think not needed)
     } catch (error) {
       console.log(error);
     }
   }
 
-  async function updateExpense(expenseId) { //Doesn't save the updated expense
+  async function updateExpense(expenseId) {
+    //Doesn't save the updated expense
     //this is x
     try {
       const res = await axios.put(
         `http://localhost:8080/expenses/updateExpense/${expenseId}`,
-        editingExpenseData
+        editingExpenseData,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
       );
       setEditingExpenseId(null);
       console.log(res.data);
@@ -103,7 +118,12 @@ function Fixed({}) {
   async function deleteExpense(expenseId) {
     try {
       let res = await axios.delete(
-        `http://localhost:8080/expenses/deleteExpense/${expenseId}`
+        `http://localhost:8080/expenses/deleteExpense/${expenseId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
       );
       console.log(res.data);
       getExpenses();
@@ -129,9 +149,14 @@ function Fixed({}) {
   async function calculateCategoryTotal() {
     try {
       let res = await axios.get(
-        `http://localhost:8080/expenses/allExpenses/${category}`
+        `http://localhost:8080/expenses/allExpenses/${category}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
       );
-      let total = res.data.reduce((sum, item) => sum + Number(item.amount), 0); 
+      let total = res.data.reduce((sum, item) => sum + Number(item.amount), 0);
       setCategoryTotal(total); // Update the state variable with the total amount
       console.log(res.data);
     } catch (error) {
@@ -141,6 +166,7 @@ function Fixed({}) {
 
   return (
     <>
+      <button onClick={() => navigate("/")}>back</button>
       <h1 className="mx-auto flex justify-center mt-3 mb-5 text-xl font-bold">
         {/* {category} Expenses  */}
         {category.charAt(0).toUpperCase() + category.slice(1)}
@@ -242,9 +268,9 @@ function Fixed({}) {
           </ul>
         </div>
       ))}
-       {/* Display the category total at the bottom of the page */}
-       <div className="mx-auto flex justify-center mt-5">
-        <h2 className="text-xl font-bold">Total:{categoryTotal} </h2> 
+      {/* Display the category total at the bottom of the page */}
+      <div className="mx-auto flex justify-center mt-5">
+        <h2 className="text-xl font-bold">Total:{categoryTotal} </h2>
       </div>
     </>
   );
