@@ -12,11 +12,11 @@ const {
 const verifyToken = require("../middleware/auth.js");
 
 // routes require verify token
-router.get("/allExpenses", verifyToken, getAllExpenses); //===> to retrieve all expenses data
-router.get("/addNewExpense", verifyToken, addNewExpense); //===> add new expense
-router.get("/:id", verifyToken, getExpenseById); //===> to retrieve one expense by id
-router.put("/updateExpense/:id", verifyToken, updateExpense); //===> update expense
-router.delete("/deleteExpense/:id", verifyToken, deleteExpense); //===> delete one expense
-router.delete("/deleteAllExpenses", verifyToken, deleteAllExpenses); //===> delete all expenses
+router.get("/allExpenses/:category", getAllExpenses); //===> to retrieve all expenses data
+router.post("/addNewExpense", addNewExpense); //===> add new expense
+router.get("/:id", getExpenseById); //===> to retrieve one expense by id
+router.put("/updateExpense/:id", updateExpense); //===> update expense
+router.delete("/deleteExpense/:id", deleteExpense); //===> delete one expense
+router.delete("/deleteAllExpenses", deleteAllExpenses); //===> delete all expenses
 
 module.exports = router;

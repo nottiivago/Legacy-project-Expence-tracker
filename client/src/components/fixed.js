@@ -47,7 +47,7 @@ function Fixed() {
     }
   }
 
-  async function getExpenses() {
+  async function getExpenses(z) {
     try {
       let res = await axios.get(`http://localhost:8080/expenses/allExpenses`);
       setFixedExpenses(res.data);

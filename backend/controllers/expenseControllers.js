@@ -2,9 +2,17 @@ const Expense = require("../schemas/expenseSchema.js");
 
 // _________________get all expenses_______________
 let getAllExpenses = async (req, res) => {
+  const category = req.params.category;
   try {
-    const allExpenses = await Expense.find().populate("creator");
-    res.json(allExpenses);
+    let allExpenses;
+    if (category === "all") {
+      allExpenses = await Expense.find({});
+      return res.json(allExpenses);
+    } else {
+      allExpenses = await Expense.find({ category });
+      // .populate("creator");
+      return res.json(allExpenses);
+    }
   } catch (error) {
     console.log(`Error: ${error}`);
     res
@@ -18,7 +26,8 @@ let getExpenseById = async (req, res) => {
   try {
     const id = req.params.id;
 
-    const expense = await Expense.findById({ _id: id }).populate("creator");
+    const expense = await Expense.findById({ _id: id });
+    // .populate("creator");
 
     if (!expense) {
       return res.status(404).json({ message: "Expense doesn't exist" });
@@ -33,13 +42,13 @@ let getExpenseById = async (req, res) => {
 // _________________create new expense_______________
 
 let addNewExpense = async (req, res) => {
-  const id = req.params.id;
-  const { title, amount, category } = req.body;
+  // const id = req.params.id;
+  const { tittle, amount, category } = req.body;
   try {
-    if (!title || !amount || !category) {
+    if (!tittle || !amount || !category) {
       return res.status(400).json({ message: "All fields are required!!" });
     }
-    const expenseExist = await Expense.findOne({ title });
+    const expenseExist = await Expense.findOne({ tittle });
     if (expenseExist) {
       console.log({ message: "Expense already exists" });
       return res.status(400).json({
@@ -49,7 +58,7 @@ let addNewExpense = async (req, res) => {
 
     const newExpense = {
       ...req.body,
-      creator: id,
+      // creator: id,
     };
     const createdExpense = await Expense.create(newExpense);
 
