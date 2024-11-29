@@ -6,7 +6,7 @@ const expenseSchema = new mongoose.Schema(
     tittle: { type: String },
     amount: { type: Number },
     category: { type: String },
-    // creator: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    creator: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   },
   {
     timestamps: true, // This option automatically adds 'createdAt' and 'updatedAt' fields to your documents

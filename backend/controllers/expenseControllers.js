@@ -4,13 +4,15 @@ const Expense = require("../schemas/expenseSchema.js");
 let getAllExpenses = async (req, res) => {
   const category = req.params.category;
   try {
+    const userId = req.user._id;
     let allExpenses;
     if (category === "all") {
-      allExpenses = await Expense.find({});
+      allExpenses = await Expense.find({ creator: userId }).populate("creator");
       return res.json(allExpenses);
     } else {
-      allExpenses = await Expense.find({ category });
-      // .populate("creator");
+      allExpenses = await Expense.find({ category, creator: userId }).populate(
+        "creator"
+      );
       return res.json(allExpenses);
     }
   } catch (error) {
@@ -25,9 +27,12 @@ let getAllExpenses = async (req, res) => {
 let getExpenseById = async (req, res) => {
   try {
     const id = req.params.id;
+    const userId = req.user._id;
 
-    const expense = await Expense.findById({ _id: id });
-    // .populate("creator");
+    const expense = await Expense.findById({
+      _id: id,
+      creator: userId,
+    }).populate("creator");
 
     if (!expense) {
       return res.status(404).json({ message: "Expense doesn't exist" });
@@ -42,13 +47,20 @@ let getExpenseById = async (req, res) => {
 // _________________create new expense_______________
 
 let addNewExpense = async (req, res) => {
-  // const id = req.params.id;
+  const id = req.params.id;
+  const userId = req.user._id;
+
   const { tittle, amount, category } = req.body;
   try {
     if (!tittle || !amount || !category) {
       return res.status(400).json({ message: "All fields are required!!" });
     }
-    const expenseExist = await Expense.findOne({ tittle });
+    const expenseExist = await Expense.findOne({
+      tittle,
+      creator: userId,
+    }).populate("creator");
+    console.log(expenseExist);
+
     if (expenseExist) {
       console.log({ message: "Expense already exists" });
       return res.status(400).json({
@@ -58,7 +70,7 @@ let addNewExpense = async (req, res) => {
 
     const newExpense = {
       ...req.body,
-      // creator: id,
+      creator: userId,
     };
     const createdExpense = await Expense.create(newExpense);
 
@@ -82,13 +94,14 @@ let addNewExpense = async (req, res) => {
 //___________________________update expense data________________
 let updateExpense = async (req, res) => {
   const id = req.params.id;
+  const userId = req.user._id;
   const updatedExpense = req.body;
 
   try {
     const oldExpense = await Expense.findByIdAndUpdate(
-      { _id: id },
+      { _id: id, creator: userId },
       updatedExpense
-    );
+    ).populate("creator");
     if (!oldExpense) {
       console.log(`Expense does not exist`);
       res.status(404).json({ message: "Expense does not exist" });
@@ -108,9 +121,13 @@ let updateExpense = async (req, res) => {
 
 let deleteExpense = async (req, res) => {
   const id = req.params.id;
+  const userId = req.user._id;
 
   try {
-    const expenseToDelete = await Expense.findByIdAndDelete({ _id: id });
+    const expenseToDelete = await Expense.findByIdAndDelete({
+      _id: id,
+      creator: userId,
+    });
     if (!expenseToDelete) {
       console.log(`Expense does not exist`);
       res.status(404).json({ message: "Expense does not exist" });
@@ -128,7 +145,9 @@ let deleteExpense = async (req, res) => {
 
 let deleteAllExpenses = async (req, res) => {
   try {
-    const result = await Expense.deleteMany();
+    const userId = req.user._id;
+
+    const result = await Expense.deleteMany({ creator: userId });
 
     res.status(200).json({
       message: "All expenses deleted successfully",
