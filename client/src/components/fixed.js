@@ -2,56 +2,68 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
 
-
 let expenseInitialValue = {
   tittle: "",
   amount: "",
-  category: "", 
+  category: "",
 };
+
+// let totalInitialValue = {
+//     fixed: 0,
+//     living: 0,
+//     extra: 0, 
+//     income: 0,
+//     savings: 0,
+//   }
+
 
 function Fixed({}) {
   const [expenseData, setExpenseData] = useState(expenseInitialValue);
-  const [fixedExpenses, setFixedExpenses] = useState([]);
-  const [editingExpenseId, setEditingExpenseId] = useState(null); //keeps track of the expense being edited
-  const [editingExpenseData, setEditingExpenseData] =
-    useState(expenseInitialValue);
-    
-        const location = useLocation();
-        const category = location.pathname.replace("/", ""); // Extract category from URL
+  const [categoryExpenses, setCategoryExpenses] = useState([]);
+  const [editingExpenseId, setEditingExpenseId] = useState(null); //monitors the expense in edit mode by keeping track of the ID
+  const [editingExpenseData, setEditingExpenseData] = useState(expenseInitialValue); // holds the data of the expense being edited {title:, amount: etc}
+  const [categoryTotal, setCategoryTotal] = useState(0); 
+
+
+
+  const location = useLocation();
+  const category = location.pathname.replace("/", ""); // Extract category from URL
 
   useEffect(() => {
     getExpenses();
- // Reset the expense data category when the category changes
- setExpenseData((prev) => ({ ...prev, category }));
-}, [category]);
+    calculateCategoryTotal();
+    // Resets expense data category when the category changes, ensures the category is always up to date
+    setExpenseData((prev) => ({ ...prev, category }));
+    
+  }, [category]);
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    // Convert the value to a number before setting it
+    setExpenseData({
+      ...expenseData,
+      [name]: name === "amount" ? Number(value) || 0 : value, // Ensure amount is always a number
+    });
+  };
 
- const handleChange = (e) => {
-  const { name, value } = e.target;
-  // Convert the value to a number before setting it
-  setExpenseData({
-    ...expenseData,
-    [name]: name === "amount" ? Number(value) || 0 : value, // Ensure amount is always a number
-  });
-};
+  const handleEditChange = (e) => {
+    const { name, value } = e.target;
+    setEditingExpenseData({
+      ...editingExpenseData,
+      [name]: name === "amount" ? Number(value) || 0 : value, // Ensure amount is always a number
+    });
+  };
 
-const handleEditChange = (e) => {
-  const { name, value } = e.target;
-  setEditingExpenseData({
-    ...editingExpenseData,
-    [name]: name === "amount" ? Number(value) || 0 : value, // Ensure amount is always a number
-  });
-};
   async function createNewExpense() {
     try {
-        const res = await axios.post(
+      const res = await axios.post(
         "http://localhost:8080/expenses/addNewExpense",
         expenseData
-
       );
       setExpenseData((prev) => ({ ...prev, tittle: "", amount: "" }));
       console.log(res.data);
       getExpenses();
+      calculateCategoryTotal(); // Update the total after creating a new expense
     } catch (error) {
       console.log(error);
     }
@@ -59,21 +71,22 @@ const handleEditChange = (e) => {
 
   async function getExpenses() {
     try {
-        const res = await axios.get(
-            `http://localhost:8080/expenses/allExpenses/${category}`
-          );
-      setFixedExpenses(res.data);
-    //   const total = res.data.reduce((sum, item) => sum + item.amount, 0);
+      const res = await axios.get(
+        `http://localhost:8080/expenses/allExpenses/${category}`
+      );
+      setCategoryExpenses(res.data);
+      //   const total = res.data.reduce((sum, item) => sum + item.amount, 0);
       console.log(res.data);
+    //   calculateCategoryTotal(); // Update the total after fetching expenses (I think not needed)
     } catch (error) {
       console.log(error);
     }
   }
 
-  async function updateExpense(expenseId) {
+  async function updateExpense(expenseId) { //Doesn't save the updated expense
     //this is x
     try {
-        const  res = await axios.put(
+      const res = await axios.put(
         `http://localhost:8080/expenses/updateExpense/${expenseId}`,
         editingExpenseData
       );
@@ -81,6 +94,7 @@ const handleEditChange = (e) => {
       console.log(res.data);
       setEditingExpenseData(expenseInitialValue);
       getExpenses();
+      calculateCategoryTotal(); // Update the total after updating an expense
     } catch (error) {
       console.log(error);
     }
@@ -93,34 +107,46 @@ const handleEditChange = (e) => {
       );
       console.log(res.data);
       getExpenses();
+      calculateCategoryTotal(); // Update the total after deleting an expense
     } catch (error) {
       console.log(error);
     }
   }
 
-//   async function deleteAllExpense() {
-//     try {
-//       let res = await axios.delete(
-//         `http://localhost:8080/expenses/deleteAllExpenses`
-//       );
+  //   async function deleteAllExpense() {
+  //     try {
+  //       let res = await axios.delete(
+  //         `http://localhost:8080/expenses/deleteAllExpenses`
+  //       );
 
-//       console.log(res.data);
-//       getExpenses();
-//     } catch (error) {
-//       console.log(error);
-//     }
-//   }
+  //       console.log(res.data);
+  //       getExpenses();
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   }
+
+  async function calculateCategoryTotal() {
+    try {
+      let res = await axios.get(
+        `http://localhost:8080/expenses/allExpenses/${category}`
+      );
+      let total = res.data.reduce((sum, item) => sum + Number(item.amount), 0); 
+      setCategoryTotal(total); // Update the state variable with the total amount
+      console.log(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   return (
     <>
       <h1 className="mx-auto flex justify-center mt-3 mb-5 text-xl font-bold">
-      {/* {category} Expenses  */}
-      {category.charAt(0).toUpperCase() + category.slice(1)} Expenses
+        {/* {category} Expenses  */}
+        {category.charAt(0).toUpperCase() + category.slice(1)}
       </h1>
       <div className="mx-auto flex items-start my-5 ">
-      <button onClick={createNewExpense}>
-          Add {category} expense:
-        </button>
+        <button onClick={createNewExpense}>Add {category} expense:</button>
         <div className="inline">
           <input
             onChange={handleChange}
@@ -142,20 +168,17 @@ const handleEditChange = (e) => {
       {/* <button onClick={getExpenses} className="mr-5 ">All fixed costs</button>
       <button className="ml-5" onClick={deleteAllExpense}>delete all</button> */}
 
-
-
-      {fixedExpenses.map((x, index) => (
+      {categoryExpenses.map((x, index) => (
         <div key={index} className="flex items-center my-2">
           <ul className="flex w-full">
             {editingExpenseId === x._id ? (
               <>
-                 <li className="flex-1 p-2 bg-green-700">
+                <li className="flex-1 p-2 bg-green-700">
                   <input
                     onChange={handleEditChange}
                     placeholder="tittle"
                     name="tittle"
                     value={editingExpenseData.tittle}
-                    
                   />
                 </li>
 
@@ -165,7 +188,8 @@ const handleEditChange = (e) => {
                     placeholder="amount"
                     type="number"
                     name="amount"
-                    value={editingExpenseData.amount}/>
+                    value={editingExpenseData.amount}
+                  />
                 </li>
               </>
             ) : (
@@ -184,7 +208,7 @@ const handleEditChange = (e) => {
                 >
                   Save
                 </button>
-               <button
+                <button
                   className="p-2 bg-red-500 text-white"
                   onClick={() => setEditingExpenseId(null)}
                 >
@@ -218,8 +242,10 @@ const handleEditChange = (e) => {
           </ul>
         </div>
       ))}
-
-      
+       {/* Display the category total at the bottom of the page */}
+       <div className="mx-auto flex justify-center mt-5">
+        <h2 className="text-xl font-bold">Total:{categoryTotal} </h2> 
+      </div>
     </>
   );
 }

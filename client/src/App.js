@@ -13,9 +13,10 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Homepage />} />
-          <Route path="/Fixed" element={<Fixed />} />
+          <Route path="/Fixed" element={<Fixed />} />   
           <Route path="/Living" element={<Fixed />} />
           <Route path="/Extra" element={<Fixed />} />
+          <Route path="/income" element={<Fixed />} />
         </Routes>
       </BrowserRouter>
     </div>  

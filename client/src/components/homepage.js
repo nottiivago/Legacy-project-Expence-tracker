@@ -1,20 +1,42 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 
 //functionality&calculation for total of each number and Income edit and update after Income Schema is created
 function Homepage() {
-  const [income, setIncome] = useState("");
-//   const [totals, setTotals] = useState({
-//     fixed: 0,
-//     living: 0,
-//     extra: 0, 
-//   });
+  const [incomeTotal, setIncomeTotal] = useState(0);
+  const [fixedTotal, setFixedTotal] = useState(0);
+  const [livingTotal, setLivingTotal] = useState(0);
+  const [extraTotal, setExtraTotal] = useState(0);
 
-  const handleIncomeChange = (e) => {
-    setIncome(e.target.value);
-  };
+  useEffect(() => {
+    fetchCategoryTotals();
+  }, []);
+
+  async function fetchCategoryTotals() {
+    try {
+      const fixedRes = await axios.get("http://localhost:8080/expenses/allExpenses/fixed");
+      const livingRes = await axios.get("http://localhost:8080/expenses/allExpenses/living");
+      const extraRes = await axios.get("http://localhost:8080/expenses/allExpenses/extra");
+      const incomeRes = await axios.get("http://localhost:8080/expenses/allExpenses/income");
+
+      const fixedTotal = fixedRes.data.reduce((sum, item) => sum + Number(item.amount), 0);
+      const livingTotal = livingRes.data.reduce((sum, item) => sum + Number(item.amount), 0);
+      const extraTotal = extraRes.data.reduce((sum, item) => sum + Number(item.amount), 0);
+      const incomeTotal = incomeRes.data.reduce((sum, item) => sum + Number(item.amount), 0);
+
+      setFixedTotal(fixedTotal);
+      setLivingTotal(livingTotal);
+      setExtraTotal(extraTotal);
+      setIncomeTotal(incomeTotal);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+//   const handleIncomeChange = (e) => {
+//     setIncome(e.target.value);
+//   };
 
   const navigate = useNavigate();
 
@@ -39,16 +61,10 @@ function Homepage() {
       </div>
 
       <div className="mt-3 mx-auto flex justify-center h-full border-2 border-green-500 rounded-md max-w-[350px] sm:max-w-[500px]  text-green-800">
-        <h1 className="pl-2 flex justify-center text-xl font-bold">
-          Income:</h1>
-          <input
-            type="number"
-            value={income}
-            onChange={handleIncomeChange}
-            className="ml-2 w-24 border border-gray-300 rounded px-2"
-            placeholder="Monthly"
-          />
-        
+        <button
+        onClick={() => handleRedirect("/income")}
+        className="pl-2 flex justify-center text-xl font-bold">
+          Income:{incomeTotal}</button> 
       </div>
 
       <div className="mt-3 mx-auto h-[125px] border-2 border-black rounded-md max-w-[350px] sm:max-w-[500px]">
@@ -59,7 +75,7 @@ function Homepage() {
           Fixed Costs
         </button>
         <h4 className="flex justify-center items-center pt-5 font-bold  text-green-800">
-        {/* {totals.fixed} */} Number
+        {fixedTotal} 
         </h4>
       </div>
 
@@ -71,7 +87,7 @@ function Homepage() {
           Living Expenses
         </button>
         <h4 className="flex justify-center items-center pt-5 font-bold  text-yellow-800">
-        {/* {totals.living} */}Number
+        {livingTotal}
         </h4>
       </div>
 
@@ -83,7 +99,7 @@ function Homepage() {
           Extra
         </button>
         <h4 className="flex justify-center items-center pt-5 font-bold  text-red-800">
-        {/* {totals.extra} */}Number
+        {extraTotal}
         </h4>
       </div>
 
