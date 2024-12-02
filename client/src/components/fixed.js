@@ -171,25 +171,30 @@ function Fixed({}) {
   }
 
   return (
-    <div className="min-h-screen min-w-screen">
+    <div className="min-h-screen min-w-screen bg-[#212735]">
       <div className="w-full flex justify-center mx-auto">
         <button
           className="flex justify-start mt-3 "
           onClick={() => navigate("/")}
         >
           <img
-            src="/assets/reply-solid.svg"
+            src="/assets/reply-gold.svg"
             alt="back"
-            className="w-6 h-6 ml-2 absolute"
+            className="w-6 sm:w-10 h-8 sm:h-8 ml-2 absolute"
           />
         </button>
-        <h1 className="mx-auto mt-3 mb-5 text-xl font-bold">
+        <h1 className="mx-auto mt-3 mb-5 text-xl sm:text-2xl lg:text-3xl font-bold text-[#FAEAB6]">
           {/* {category} Expenses  */}
           {category.charAt(0).toUpperCase() + category.slice(1)}
         </h1>
       </div>
-      <div className="mx-auto  my-5 ">
-        <button onClick={createNewExpense}>Add </button>
+      <div className="mx-auto flex justify-center  my-5 ">
+        <button
+          className="text-[#FAEAB6] hover:scale-[1.3] ml-3 text-xl sm:text-2xl lg:text-3xl  px-1 "
+          onClick={createNewExpense}
+        >
+          Add{" "}
+        </button>
         {/* {category} expense: */}
         <div className="inline-flex ">
           <input
@@ -197,7 +202,7 @@ function Fixed({}) {
             placeholder="tittle"
             name="tittle"
             value={expenseData.tittle}
-            className="max-w-[100px] ml-3"
+            className="max-w-[100px] sm:max-w-[150px] lg:max-w-[200px] sm:text-xl lg:text-2xl ml-3 bg-[rgba(255,255,255,0.87)] rounded-lg"
             maxLength="10"
           />
           <input
@@ -206,7 +211,7 @@ function Fixed({}) {
             type="number"
             name="amount"
             value={expenseData.amount}
-            className="max-w-[100px] ml-3"
+            className="max-w-[100px] sm:max-w-[150px] lg:max-w-[200px] sm:text-xl lg:text-2xl  ml-3 bg-[rgba(255,255,255,0.87)] rounded-lg"
             max="99999"
           />
         </div>
@@ -217,38 +222,40 @@ function Fixed({}) {
 
       {/* When edit is clicked */}
       {categoryExpenses.map((x, index) => (
-        <div key={index} className="flex items-center my-2">
-          <ul className="flex w-full">
+        <div key={index} className="flex items-center my-2 ">
+          <ul className="flex w-full ">
             {editingExpenseId === x._id ? (
               <>
-                <li className="flex-1 p-2 bg-green-700">
+              {/* text-[#C6B796] text-[#FAEAB6] */}
+                <li className="flex-1 p-2 bg-[rgb(214,200,156)] rounded-l-lg">
                   <input
                     onChange={handleEditChange}
                     placeholder="tittle"
                     name="tittle"
                     value={editingExpenseData.tittle}
-                    className="max-w-[100px] "
+                    className="max-w-[100px] bg-[rgba(255,255,255,0.87)] sm:text-xl lg:text-2xl border border-[#212735] rounded-lg"
                     maxLength="10"
                   />
                 </li>
 
-                <li className="flex-1 bg-green-800 pt-2">
+                <li className="flex-1 bg-[rgb(198,183,150)] pt-2">
                   <input
                     onChange={handleEditChange}
                     placeholder="amount"
                     type="number"
                     name="amount"
                     value={editingExpenseData.amount}
-                    className="max-w-[100px] ml-2"
+                    className="max-w-[100px] ml-2 bg-[rgba(255,255,255,0.87)] sm:text-xl lg:text-2xl border border-[#212735] rounded-lg"
                     max="99999"
+                    
                   />
                 </li>
               </>
             ) : (
-              //  added info - display
+              //  added info - display 
               <>
-                <li className="flex-1 p-2 bg-green-700"> {x.tittle}</li>
-                <li className="flex-1 bg-green-800 p-2 text-white">
+                <li className="flex-1 p-2  bg-[rgba(214,200,156,0.87)] sm:text-xl lg:text-2xl text-[#212735] rounded-l-lg"> {x.tittle}</li>
+                <li className="flex-1 bg-[rgb(198,183,150)] p-2 sm:text-xl lg:text-2xl text-[#212735]">
                   {x.amount}
                 </li>
               </>
@@ -257,13 +264,13 @@ function Fixed({}) {
             {editingExpenseId === x._id ? (
               <>
                 <button
-                  className="my-1 mx-2"
+                  className="px-2 bg-[white] sm:text-xl lg:text-2xl"
                   onClick={() => updateExpense(x._id)}
                 >
                   Save
                 </button>
                 <button
-                  className="p-2 bg-red-500 text-white"
+                  className="p-2 bg-red-500 sm:text-xl lg:text-2xl text-white rounded-r-lg"
                   onClick={() => setEditingExpenseId(null)}
                 >
                   Cancel
@@ -272,7 +279,7 @@ function Fixed({}) {
             ) : (
               <>
                 <button
-                  className="my-1 mx-2"
+                  className="px-3 bg-[white] sm:text-xl lg:text-2xl"
                   onClick={() => {
                     console.log("Editing:", x);
                     setEditingExpenseId(x._id);
@@ -286,7 +293,7 @@ function Fixed({}) {
                   Edit
                 </button>
                 <button
-                  className="p-2 bg-red-500 text-white"
+                  className="px-[10px] bg-red-500 text-white sm:text-xl lg:text-2xl rounded-r-lg"
                   onClick={() => deleteExpense(x._id)}
                 >
                   Delete
@@ -298,7 +305,7 @@ function Fixed({}) {
       ))}
       {/* total  */}
       <div className="mx-auto flex justify-center mt-5">
-        <h2 className="text-xl font-bold">Total:{categoryTotal} </h2>
+        <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#FAEAB6]">Total:{categoryTotal} </h2>
       </div>
     </div>
   );

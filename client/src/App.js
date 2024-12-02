@@ -21,7 +21,7 @@ function App() {
             }
           />
           <Route
-            path="/fixed"
+            path="/core"
             element={
               <ProtectedRoute>
                 <Fixed />
@@ -29,7 +29,7 @@ function App() {
             }
           />
           <Route
-            path="/living"
+            path="/flow"
             element={
               <ProtectedRoute>
                 <Fixed />
@@ -37,7 +37,7 @@ function App() {
             }
           />
           <Route
-            path="/extra"
+            path="/overflow"
             element={
               <ProtectedRoute>
                 <Fixed />

@@ -61,13 +61,36 @@ function Register() {
     }
   };
   return (
-    <div>
+    <div className="min-w-screen min-h-screen bg-[#212735] ">
+      
+      <h1 className="flex justify-center pt-10  font-bold text-[#C6B796] whitespace-nowrap ">
+        <span className="text-6xl sm:text-7xl   px-1">
+          Cash
+          <span className="inline-block h-[45px] w-[45px] sm:w-[57px] sm:h-[57px]  mx-1 overflow-hidden rounded-full scale-110">
+            <img
+              src="/assets/Logo1.webp"
+              alt="logo"
+              className="w-full h-full object-cover object-center"
+            />
+          </span>
+          ver
+        </span>
+        <span className="  transform ml-[-20px] sm:ml-[-25px] pt-12 sm:pt-16 text-xl font-bold text-[#FAEAB6] ">
+          F<span className="text-white">L</span>O
+          <span className="text-white">W</span>
+        </span>
+      </h1>
+    
+
+
+      <div className="shadow-[10px_10px_6px_rgba(250,234,182,0.2)] w-[300px] sm:w-[400px] lg:w-[450px] text-[#101e40] h-[400px] sm:h-[500px] lg:h-[550px] flex flex-col items-center justify-center gap-5 mx-auto mt-20 p-5 bg-[#C6B796]   rounded ">
       <input
         type="text"
         name="firstName"
         value={newUser.firstName}
         placeholder="First name"
         onChange={handleChange}
+        className="bg-[#C6B796]  border border-[#101e40]  sm:text-xl lg:text-2xl"
       />
       <input
         type="text"
@@ -75,6 +98,7 @@ function Register() {
         value={newUser.lastName}
         placeholder="Last name"
         onChange={handleChange}
+        className="bg-[#C6B796]  border border-[#101e40] sm:text-xl lg:text-2xl "
       />
       <input
         type="email"
@@ -82,6 +106,7 @@ function Register() {
         value={newUser.email}
         placeholder="Email"
         onChange={handleChange}
+        className="bg-[#C6B796]  border border-[#101e40] sm:text-xl lg:text-2xl "
       />
       <input
         type="password"
@@ -89,6 +114,7 @@ function Register() {
         value={newUser.password}
         placeholder="Password"
         onChange={handleChange}
+        className="bg-[#C6B796]  border border-[#101e40] sm:text-xl lg:text-2xl "
       />
       <input
         type="password"
@@ -96,14 +122,16 @@ function Register() {
         value={newUser.password2}
         placeholder="Confirm password"
         onChange={handleChange}
+        className="bg-[#C6B796]  border border-[#101e40] sm:text-xl lg:text-2xl "
       />
-      <button onClick={register}>Register</button>
-      <p>
-        Have an account?{" "}
-        <a onClick={() => navigate("/login")} style={{ cursor: "pointer" }}>
+      <button className="w-[195px] sm:w-[245px] lg:w-[294px] bg-[#101e40] text-[#FAEAB6] sm:text-xl lg:text-2xl" onClick={register}>Register</button>
+      <p className="font-light text-xs sm:text-base lg:text-lg italic">
+       Already have an account?{" "}
+        <button className="text-[#212735]  text-base sm:text-lg lg:text-xl font-bold italic" onClick={() => navigate("/login")} >
           Log In
-        </a>
+        </button>
       </p>
+    </div>
     </div>
   );
 }
