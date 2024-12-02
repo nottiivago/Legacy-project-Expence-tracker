@@ -2,24 +2,61 @@ import { useState, useEffect } from "react";
 import { BrowserRoutes, Routes, Route, BrowserRouter } from "react-router-dom";
 import axios from "axios";
 import Homepage from "./components/homepage";
+import ProtectedRoute from "./hooks/ProtectedRoute";
 import Fixed from "./components/fixed";
-
+import Login from "./components/pages/login";
+import Register from "./components/pages/register";
 
 function App() {
- 
-
   return (
     <div className="App">
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Homepage />} />
-          <Route path="/Fixed" element={<Fixed />} />   
-          <Route path="/Living" element={<Fixed />} />
-          <Route path="/Extra" element={<Fixed />} />
-          <Route path="/income" element={<Fixed />} />
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <Homepage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/fixed"
+            element={
+              <ProtectedRoute>
+                <Fixed />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/living"
+            element={
+              <ProtectedRoute>
+                <Fixed />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/extra"
+            element={
+              <ProtectedRoute>
+                <Fixed />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/income"
+            element={
+              <ProtectedRoute>
+                <Fixed />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
         </Routes>
       </BrowserRouter>
-    </div>  
+    </div>
   );
 }
 
