@@ -47,27 +47,9 @@ let getExpenseById = async (req, res) => {
 // _________________create new expense_______________
 
 let addNewExpense = async (req, res) => {
-  const id = req.params.id;
   const userId = req.user._id;
 
-  const { tittle, amount, category } = req.body;
   try {
-    if (!tittle || !amount || !category) {
-      return res.status(400).json({ message: "All fields are required!!" });
-    }
-    const expenseExist = await Expense.findOne({
-      tittle,
-      creator: userId,
-    }).populate("creator");
-    console.log(expenseExist);
-
-    if (expenseExist) {
-      console.log({ message: "Expense already exists" });
-      return res.status(400).json({
-        message: `Backend: Expense already exists!, login or please register with different credentials`,
-      });
-    }
-
     const newExpense = {
       ...req.body,
       creator: userId,

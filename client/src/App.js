@@ -1,6 +1,7 @@
 import { BrowserRoutes, Routes, Route, BrowserRouter } from "react-router-dom";
 import ProtectedRoute from "./hooks/ProtectedRoute";
 import Homepage from "./components/homepage";
+import ProtectedRoute from "./hooks/ProtectedRoute";
 import Fixed from "./components/fixed";
 import Login from "./components/pages/login";
 import Register from "./components/pages/register";
@@ -19,7 +20,7 @@ function App() {
             }
           />
           <Route
-            path="/fixed"
+            path="/core"
             element={
               <ProtectedRoute>
                 <Fixed />
@@ -27,7 +28,7 @@ function App() {
             }
           />
           <Route
-            path="/living"
+            path="/flow"
             element={
               <ProtectedRoute>
                 <Fixed />
@@ -35,7 +36,7 @@ function App() {
             }
           />
           <Route
-            path="/extra"
+            path="/overflow"
             element={
               <ProtectedRoute>
                 <Fixed />
