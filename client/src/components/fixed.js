@@ -32,8 +32,7 @@ function Fixed({}) {
   useEffect(() => {
     getExpenses();
     calculateCategoryTotal();
-    // Resets expense data category when the category changes, ensures the category is always up to date
-    setExpenseData((prev) => ({ ...prev, category }));
+    setExpenseData((prev) => ({ ...prev, category })); // Resets expense data category when the category changes, ensures the category is always up to date
   }, [category]);
 
   const handleChange = (e) => {
@@ -41,7 +40,6 @@ function Fixed({}) {
     if (name === "amount" && value > 999999) {
       return;
     }
-    // Convert the value to a number before setting it
     setExpenseData({
       ...expenseData,
       [name]: value,
@@ -59,6 +57,12 @@ function Fixed({}) {
     });
   };
 
+  const handleEnter = (e) => {
+    if (e.key === "Enter") {
+      createNewExpense();
+    }
+  };
+
   async function createNewExpense() {
     try {
       const res = await axios.post(
@@ -73,7 +77,7 @@ function Fixed({}) {
       setExpenseData((prev) => ({ ...prev, tittle: "", amount: "" }));
       console.log(res.data);
       getExpenses();
-      calculateCategoryTotal(); // Update the total after creating a new expense
+      calculateCategoryTotal();
     } catch (error) {
       console.log(error);
     }
@@ -99,7 +103,6 @@ function Fixed({}) {
   }
 
   async function updateExpense(expenseId) {
-    //Doesn't save the updated expense
     //this is x
     try {
       const res = await axios.put(
@@ -115,7 +118,7 @@ function Fixed({}) {
       console.log(res.data);
       setEditingExpenseData(expenseInitialValue);
       getExpenses();
-      calculateCategoryTotal(); // Update the total after updating an expense
+      calculateCategoryTotal(); 
     } catch (error) {
       console.log(error);
     }
@@ -133,7 +136,7 @@ function Fixed({}) {
       );
       console.log(res.data);
       getExpenses();
-      calculateCategoryTotal(); // Update the total after deleting an expense
+      calculateCategoryTotal(); 
     } catch (error) {
       console.log(error);
     }
@@ -184,7 +187,6 @@ function Fixed({}) {
           />
         </button>
         <h1 className="mx-auto mt-3 mb-5 text-xl sm:text-2xl lg:text-3xl font-bold text-[#FAEAB6]">
-          {/* {category} Expenses  */}
           {category.charAt(0).toUpperCase() + category.slice(1)}
         </h1>
       </div>
@@ -195,10 +197,10 @@ function Fixed({}) {
         >
           Add{" "}
         </button>
-        {/* {category} expense: */}
         <div className="inline-flex ">
           <input
             onChange={handleChange}
+            onKeyDown={handleEnter}
             placeholder="tittle"
             name="tittle"
             value={expenseData.tittle}
@@ -207,6 +209,7 @@ function Fixed({}) {
           />
           <input
             onChange={handleChange}
+            onKeyDown={handleEnter}
             placeholder="amount"
             type="number"
             name="amount"
@@ -220,13 +223,13 @@ function Fixed({}) {
       {/* <button onClick={getExpenses} className="mr-5 ">All fixed costs</button>
       <button className="ml-5" onClick={deleteAllExpense}>delete all</button> */}
 
-      {/* When edit is clicked */}
+      {/* When edit is clicked */}{/* inside edit */}
       {categoryExpenses.map((x, index) => (
         <div key={index} className="flex items-center my-2 ">
           <ul className="flex w-full ">
             {editingExpenseId === x._id ? (
               <>
-              {/* text-[#C6B796] text-[#FAEAB6] */}
+                {/* text-[#C6B796] text-[#FAEAB6] */}
                 <li className="flex-1 p-2 bg-[rgb(214,200,156)] rounded-l-lg">
                   <input
                     onChange={handleEditChange}
@@ -247,14 +250,16 @@ function Fixed({}) {
                     value={editingExpenseData.amount}
                     className="max-w-[100px] ml-2 bg-[rgba(255,255,255,0.87)] sm:text-xl lg:text-2xl border border-[#212735] rounded-lg"
                     max="99999"
-                    
                   />
                 </li>
               </>
             ) : (
-              //  added info - display 
+              //  added info - display
               <>
-                <li className="flex-1 p-2  bg-[rgba(214,200,156,0.87)] sm:text-xl lg:text-2xl text-[#212735] rounded-l-lg"> {x.tittle}</li>
+                <li className="flex-1 p-2  bg-[rgba(214,200,156,0.87)] sm:text-xl lg:text-2xl text-[#212735] rounded-l-lg">
+                  {" "}
+                  {x.tittle}
+                </li>
                 <li className="flex-1 bg-[rgb(198,183,150)] p-2 sm:text-xl lg:text-2xl text-[#212735]">
                   {x.amount}
                 </li>
@@ -305,7 +310,9 @@ function Fixed({}) {
       ))}
       {/* total  */}
       <div className="mx-auto flex justify-center mt-5">
-        <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#FAEAB6]">Total:{categoryTotal} </h2>
+        <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#FAEAB6]">
+          Total:{categoryTotal}{" "}
+        </h2>
       </div>
     </div>
   );

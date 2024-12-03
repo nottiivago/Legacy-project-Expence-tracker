@@ -18,6 +18,13 @@ function Register() {
     }
   }
 
+  const handleEnter = (e) => {
+    if (e.key === "Enter") {
+       register();
+    }
+  };
+ 
+
   const register = async () => {
     try {
       const { firstName, lastName, email, password, password2 } = newUser;
@@ -83,13 +90,15 @@ function Register() {
     
 
 
-      <div className="shadow-[10px_10px_6px_rgba(250,234,182,0.2)] w-[300px] sm:w-[400px] lg:w-[450px] text-[#101e40] h-[400px] sm:h-[500px] lg:h-[550px] flex flex-col items-center justify-center gap-5 mx-auto mt-20 p-5 bg-[#C6B796]   rounded ">
+      <div className="shadow-[10px_10px_6px_rgba(250,234,182,0.2)] w-[300px] sm:w-[400px] lg:w-[450px] text-[#101e40] h-[400px] sm:h-[500px] lg:h-[550px] flex flex-col items-center justify-center gap-5 mx-auto mt-20 p-5 bg-[#C6B796] rounded ">
+      <h2 className="sm:text-2xl lg:text-3xl">Register</h2>
       <input
         type="text"
         name="firstName"
         value={newUser.firstName}
         placeholder="First name"
         onChange={handleChange}
+        onKeyDown={handleEnter}
         className="bg-[#C6B796]  border border-[#101e40]  sm:text-xl lg:text-2xl"
       />
       <input
@@ -98,6 +107,7 @@ function Register() {
         value={newUser.lastName}
         placeholder="Last name"
         onChange={handleChange}
+        onKeyDown={handleEnter}
         className="bg-[#C6B796]  border border-[#101e40] sm:text-xl lg:text-2xl "
       />
       <input
@@ -106,6 +116,7 @@ function Register() {
         value={newUser.email}
         placeholder="Email"
         onChange={handleChange}
+        onKeyDown={handleEnter}
         className="bg-[#C6B796]  border border-[#101e40] sm:text-xl lg:text-2xl "
       />
       <input
@@ -114,6 +125,7 @@ function Register() {
         value={newUser.password}
         placeholder="Password"
         onChange={handleChange}
+        onKeyDown={handleEnter}
         className="bg-[#C6B796]  border border-[#101e40] sm:text-xl lg:text-2xl "
       />
       <input
@@ -122,12 +134,13 @@ function Register() {
         value={newUser.password2}
         placeholder="Confirm password"
         onChange={handleChange}
+        onKeyDown={handleEnter}
         className="bg-[#C6B796]  border border-[#101e40] sm:text-xl lg:text-2xl "
       />
-      <button className="w-[195px] sm:w-[245px] lg:w-[294px] bg-[#101e40] text-[#FAEAB6] sm:text-xl lg:text-2xl" onClick={register}>Register</button>
+      <button className="w-[195px] sm:w-[245px] lg:w-[294px] bg-[#101e40] text-[#FAEAB6] sm:text-xl lg:text-2xl hover:scale-105" onClick={register}>Register</button>
       <p className="font-light text-xs sm:text-base lg:text-lg italic">
        Already have an account?{" "}
-        <button className="text-[#212735]  text-base sm:text-lg lg:text-xl font-bold italic" onClick={() => navigate("/login")} >
+        <button className="text-[#212735]  text-base sm:text-lg lg:text-xl font-bold italic hover:scale-110" onClick={() => navigate("/login")} >
           Log In
         </button>
       </p>

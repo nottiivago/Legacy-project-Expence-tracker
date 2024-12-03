@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-//functionality&calculation for total of each number and Income edit and update after Income Schema is created
+
 function Homepage() {
   const [incomeTotal, setIncomeTotal] = useState(0);
   const [coreTotal, setCoreTotal] = useState(0);
@@ -96,7 +96,8 @@ function Homepage() {
     <div
       className="min-h-screen w-screen min-w-screen overflow-hidden "
       style={{
-        backgroundImage: "url('./assets/Check-BG.jpg')",
+        
+        backgroundImage: "url('assets/Check-BGCREDIT.jpg')",
         backgroundRepeat: "no-repeat",
         backgroundPosition: "bottom",
         backgroundSize: "100% 100%",
