@@ -1,6 +1,5 @@
-import { useState, useEffect } from "react";
 import { BrowserRoutes, Routes, Route, BrowserRouter } from "react-router-dom";
-import axios from "axios";
+import ProtectedRoute from "./hooks/ProtectedRoute";
 import Homepage from "./components/homepage";
 import ProtectedRoute from "./hooks/ProtectedRoute";
 import Fixed from "./components/fixed";

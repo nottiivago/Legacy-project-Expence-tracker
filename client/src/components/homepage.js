@@ -15,24 +15,30 @@ function Homepage() {
 
   async function fetchCategoryTotals() {
     try {
+
       const coreRes = await axios.get(
         "http://localhost:8080/expenses/allExpenses/core",
+
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         }
       );
+
       const flowRes = await axios.get(
         "http://localhost:8080/expenses/allExpenses/flow",
+
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         }
       );
+
       const overflowRes = await axios.get(
         "http://localhost:8080/expenses/allExpenses/overflow",
+
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -48,6 +54,7 @@ function Homepage() {
         }
       );
 
+
       const coreTotal = coreRes.data.reduce(
         (sum, item) => sum + Number(item.amount),
         0
@@ -57,6 +64,7 @@ function Homepage() {
         0
       );
       const overflowTotal = overflowRes.data.reduce(
+
         (sum, item) => sum + Number(item.amount),
         0
       );
@@ -65,9 +73,11 @@ function Homepage() {
         0
       );
 
+
       setCoreTotal(coreTotal);
       setFlowTotal(flowTotal);
       setOverflowTotal(overflowTotal);
+
       setIncomeTotal(incomeTotal);
     } catch (error) {
       console.log(error);
@@ -93,6 +103,7 @@ function Homepage() {
   //   };
 
   return (
+
     <div
       className="min-h-screen w-screen min-w-screen overflow-hidden "
       style={{
@@ -136,8 +147,10 @@ function Homepage() {
             F<span className="text-white">L</span>O
             <span className="text-white">W</span>
           </span>
+
         </h1>
       </div>
+
 
       <section
         onClick={() => handleRedirect("/income")}
@@ -156,6 +169,7 @@ function Homepage() {
           />
         <h4 className="text-3xl sm:text-4xl px-1   justify-start h-full  rounded-md   underline  font-bold text-[#101e40] ">
           Expenses
+
         </h4>
         <img
             src="/assets/coins-solid.svg"
@@ -163,6 +177,7 @@ function Homepage() {
             className="w-6 h-6  mt-[5px]"
           />
       </div>
+
 
       <section
         onClick={() => handleRedirect("/core")}
@@ -174,6 +189,7 @@ function Homepage() {
       >
         <h4 className="font-bold text-4xl sm:text-5xl italic text-nowrap">
           Core:<span className="hover:text-[]">&nbsp;{coreTotal}</span>
+
         </h4>
       </section>
 

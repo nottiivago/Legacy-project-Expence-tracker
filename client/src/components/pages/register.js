@@ -18,12 +18,14 @@ function Register() {
     }
   }
 
+
   const handleEnter = (e) => {
     if (e.key === "Enter") {
        register();
     }
   };
  
+
 
   const register = async () => {
     try {
@@ -68,6 +70,7 @@ function Register() {
     }
   };
   return (
+
     <div className="min-w-screen min-h-screen bg-[#212735] ">
       
       <h1 className="flex justify-center pt-10  font-bold text-[#C6B796] whitespace-nowrap ">
@@ -92,14 +95,17 @@ function Register() {
 
       <div className="shadow-[10px_10px_6px_rgba(250,234,182,0.2)] w-[300px] sm:w-[400px] lg:w-[450px] text-[#101e40] h-[400px] sm:h-[500px] lg:h-[550px] flex flex-col items-center justify-center gap-5 mx-auto mt-20 p-5 bg-[#C6B796] rounded ">
       <h2 className="sm:text-2xl lg:text-3xl">Register</h2>
+
       <input
         type="text"
         name="firstName"
         value={newUser.firstName}
         placeholder="First name"
         onChange={handleChange}
+
         onKeyDown={handleEnter}
         className="bg-[#C6B796]  border border-[#101e40]  sm:text-xl lg:text-2xl"
+
       />
       <input
         type="text"
@@ -107,8 +113,10 @@ function Register() {
         value={newUser.lastName}
         placeholder="Last name"
         onChange={handleChange}
+
         onKeyDown={handleEnter}
         className="bg-[#C6B796]  border border-[#101e40] sm:text-xl lg:text-2xl "
+
       />
       <input
         type="email"
@@ -116,8 +124,10 @@ function Register() {
         value={newUser.email}
         placeholder="Email"
         onChange={handleChange}
+
         onKeyDown={handleEnter}
         className="bg-[#C6B796]  border border-[#101e40] sm:text-xl lg:text-2xl "
+
       />
       <input
         type="password"
@@ -125,8 +135,10 @@ function Register() {
         value={newUser.password}
         placeholder="Password"
         onChange={handleChange}
+
         onKeyDown={handleEnter}
         className="bg-[#C6B796]  border border-[#101e40] sm:text-xl lg:text-2xl "
+
       />
       <input
         type="password"
@@ -134,6 +146,7 @@ function Register() {
         value={newUser.password2}
         placeholder="Confirm password"
         onChange={handleChange}
+
         onKeyDown={handleEnter}
         className="bg-[#C6B796]  border border-[#101e40] sm:text-xl lg:text-2xl "
       />
@@ -150,3 +163,4 @@ function Register() {
 }
 
 export default Register;
+

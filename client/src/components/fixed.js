@@ -26,6 +26,7 @@ function Fixed({}) {
   const [categoryTotal, setCategoryTotal] = useState(0);
 
   const location = useLocation();
+  const navigate = useNavigate();
   const category = location.pathname.replace("/", ""); // Extract category from URL
   const navigate = useNavigate();
 
@@ -95,7 +96,9 @@ function Fixed({}) {
       );
       setCategoryExpenses(res.data);
       //   const total = res.data.reduce((sum, item) => sum + item.amount, 0);
+
       // console.log(res.data);
+
       //   calculateCategoryTotal(); // Update the total after fetching expenses (I think not needed)
     } catch (error) {
       console.log(error);
@@ -198,6 +201,7 @@ function Fixed({}) {
           Add{" "}
         </button>
         <div className="inline-flex ">
+
           <input
             onChange={handleChange}
             onKeyDown={handleEnter}
@@ -308,11 +312,13 @@ function Fixed({}) {
           </ul>
         </div>
       ))}
+
       {/* total  */}
       <div className="mx-auto flex justify-center mt-5">
         <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#FAEAB6]">
           Total:{categoryTotal}{" "}
         </h2>
+
       </div>
     </div>
   );

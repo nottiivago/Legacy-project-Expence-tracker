@@ -17,12 +17,12 @@ function Login() {
     }
   }
 
+
   const handleEnter = (e) => {
     if (e.key === "Enter") {
        logIn();
     }
   };
-
 
   const logIn = async () => {
     try {
@@ -48,11 +48,14 @@ function Login() {
       }
     } catch (error) {
       if (error.response) {
+
         console.error(
           "Server responded with error:",
           error.response.data.message
         );
+
         alert(error.response.data.message); // backend-error
+
       } else {
         // Other errors (e.g., network issues)
         console.error("Unexpected error from handling register:", error);
@@ -60,6 +63,7 @@ function Login() {
       }
     }
   };
+
   //backdrop-blur-md bg-transparent shadow-[10px_0_15px_rgba(0,0,0,0.3)]
   // dark blue bg-[#212735]  //dark gold #C6B796// bright gold #FAEAB6 // expenses #101e40
   return (
@@ -119,6 +123,7 @@ function Login() {
           </button>
         </p>
       </div>
+
     </div>
   );
 }
