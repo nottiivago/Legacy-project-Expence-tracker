@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import UserProfilePage from "./pages/User.profile.page";
 
 
 function Homepage() {
@@ -129,6 +130,7 @@ function Homepage() {
           >
             Logout
           </button>
+        <button onClick={()=>handleRedirect("/userPage")}> User page </button>
         </header>
 
         <h1 className="flex justify-center pt-5 sm:pt-0 font-bold text-[#C6B796] whitespace-nowrap ">
