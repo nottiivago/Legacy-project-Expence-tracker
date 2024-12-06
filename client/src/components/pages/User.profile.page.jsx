@@ -7,11 +7,15 @@ function UserProfilePage() {
     
     
     
-    const [userDetails, setUserDetails] = useState({
-        email:"",
-        firstName:"",
+    const [userDetails, setUserDetails] = useState(
+        {
+            email:"",
+            firstName:"",
+            lastName:"",
+            password:"",
 
-    });
+        }
+    );
     
     
 
@@ -35,25 +39,29 @@ function UserProfilePage() {
                     },
                   }); 
                   console.log(res.data);
-                setUserDetails(res.data);
-                // console.log(userDetails);
-            
+                setUserDetails(res.data.user);
+                
             } catch (error) {
                 console.log("Failed to fetch user details.")
             }
         }
+        console.log(userDetails);
 
     return ( 
         <>
         <div>
-            <div className="username">
-                <p>First name: {userDetails.user.firstName}</p>
+            <div className="firstName">
+                <p>First name: {userDetails.firstName}</p>
+            </div>
+            <div className="lastName">
+                <p>First name: {userDetails.lastName}</p>
+
             </div>
             <div className="password">
-                <p>password: {}</p>
+                <p>password: {userDetails.password.replace(/./g, '*')}</p>
             </div>
             <div className="Email">
-                <p>Email: {}</p>
+                <p>Email: {userDetails.email}</p>
             </div>
         </div>
         </>
