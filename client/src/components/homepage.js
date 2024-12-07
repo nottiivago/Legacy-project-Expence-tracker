@@ -1,113 +1,90 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-
+import ReactCalendar from "./ReactCalendar"; // Import your ReactCalendar component
+import { formatNumberWithCurrency } from "../utils/currencyUtils"; // Ensure this import works
 
 function Homepage() {
   const [incomeTotal, setIncomeTotal] = useState(0);
   const [coreTotal, setCoreTotal] = useState(0);
   const [flowTotal, setFlowTotal] = useState(0);
   const [overflowTotal, setOverflowTotal] = useState(0);
+  const [expenses, setExpenses] = useState([]);
+  const [selectedCurrency, setSelectedCurrency] = useState("EUR");
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchCategoryTotals();
-  }, []);
+    const today = new Date();
+    const lastMonth = new Date();
+    lastMonth.setDate(today.getDate() - 30); // Default range: last 30 days
+    fetchExpensesByDateRange(
+      lastMonth.toISOString().split("T")[0],
+      today.toISOString().split("T")[0]
+    );
+  }, [selectedCurrency]);
 
   async function fetchCategoryTotals() {
     try {
+      const headers = {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      };
 
-      const coreRes = await axios.get(
-        "http://localhost:8080/expenses/allExpenses/core",
+      const [coreRes, flowRes, overflowRes, incomeRes] = await Promise.all([
+        axios.get("http://localhost:8080/expenses/allExpenses/core", { headers }),
+        axios.get("http://localhost:8080/expenses/allExpenses/flow", { headers }),
+        axios.get("http://localhost:8080/expenses/allExpenses/overflow", { headers }),
+        axios.get("http://localhost:8080/expenses/allExpenses/income", { headers }),
+      ]);
 
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
+      setCoreTotal(coreRes.data.reduce((sum, item) => sum + Number(item.amount), 0));
+      setFlowTotal(flowRes.data.reduce((sum, item) => sum + Number(item.amount), 0));
+      setOverflowTotal(
+        overflowRes.data.reduce((sum, item) => sum + Number(item.amount), 0)
       );
-
-      const flowRes = await axios.get(
-        "http://localhost:8080/expenses/allExpenses/flow",
-
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-
-      const overflowRes = await axios.get(
-        "http://localhost:8080/expenses/allExpenses/overflow",
-
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-      const incomeRes = await axios.get(
-        "http://localhost:8080/expenses/allExpenses/income",
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-
-
-      const coreTotal = coreRes.data.reduce(
-        (sum, item) => sum + Number(item.amount),
-        0
-      );
-      const flowTotal = flowRes.data.reduce(
-        (sum, item) => sum + Number(item.amount),
-        0
-      );
-      const overflowTotal = overflowRes.data.reduce(
-
-        (sum, item) => sum + Number(item.amount),
-        0
-      );
-      const incomeTotal = incomeRes.data.reduce(
-        (sum, item) => sum + Number(item.amount),
-        0
-      );
-
-
-      setCoreTotal(coreTotal);
-      setFlowTotal(flowTotal);
-      setOverflowTotal(overflowTotal);
-
-      setIncomeTotal(incomeTotal);
+      setIncomeTotal(incomeRes.data.reduce((sum, item) => sum + Number(item.amount), 0));
     } catch (error) {
-      console.log(error);
+      console.error("Error fetching category totals:", error);
     }
   }
 
-  //   const handleIncomeChange = (e) => {
-  //     setIncome(e.target.value);
-  //   };
-
-  const navigate = useNavigate();
+  async function fetchExpensesByDateRange(startDate, endDate) {
+    try {
+      const response = await axios.get(
+        `http://localhost:8080/expenses/byDate?startDate=${startDate}&endDate=${endDate}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      setExpenses(response.data);
+    } catch (error) {
+      console.error("Error fetching expenses by date range:", error);
+    }
+  }
 
   const handleRedirect = (path) => {
     navigate(path);
   };
+
   const handleLogOut = () => {
     localStorage.removeItem("token");
     navigate("/login");
   };
 
-  //   const updateCategoryTotal = (category, total) => {
-  //     setTotals((prev) => ({ ...prev, [category]: total }));
-  //   };
+  const currencyOptions = [
+    { code: "USD", label: "US Dollar ($)" },
+    { code: "EUR", label: "Euro (€)" },
+    { code: "GBP", label: "British Pound (£)" },
+    { code: "JPY", label: "Japanese Yen (¥)" },
+  ];
 
   return (
-
     <div
-      className="min-h-screen w-screen min-w-screen overflow-hidden "
+      className="min-h-screen w-screen flex flex-col"
       style={{
-        
         backgroundImage: "url('assets/Check-BGCREDIT.jpg')",
         backgroundRepeat: "no-repeat",
         backgroundPosition: "bottom",
@@ -115,124 +92,88 @@ function Homepage() {
         backgroundAttachment: "fixed",
       }}
     >
-      <div
-        className="h-[148px] mx-auto bg-[#212735] relative shadow-sm "
-        // style={{
-        //   background:
-        //     "linear-gradient(to right, #000000 5%, #CBBD29 55%,  #000000 92%) ",
-        // }}
-      >
-        <header className="flex justify-end pt-2 ">
-          <button
-            onClick={handleLogOut}
-            className="text-md sm:text-xl lg:text-2xl font-bold  text-white mr-3"
-          >
-            Logout
-          </button>
-        </header>
-
-        <h1 className="flex justify-center pt-5 sm:pt-0 font-bold text-[#C6B796] whitespace-nowrap ">
-          <span className="text-6xl sm:text-7xl   px-1">
-            Cash
-            <span className="inline-block h-[45px] w-[45px] sm:w-[57px] sm:h-[57px]  mx-1 overflow-hidden rounded-full scale-110">
-              <img
-                src="/assets/Logo1.webp"
-                alt="logo"
-                className="w-full h-full object-cover object-center"
-              />
-            </span>
-            ver
+      <header className="flex justify-between items-center px-5 py-3 bg-[#212735] shadow-md">
+        <h1 className="text-[#C6B796] text-4xl font-bold flex items-center">
+          Cash
+          <span className="inline-block mx-2 h-8 w-8 overflow-hidden rounded-full">
+            <img
+              src="/assets/Logo1.webp"
+              alt="logo"
+              className="w-full h-full object-cover"
+            />
           </span>
-          <span className="  transform ml-[-20px] sm:ml-[-25px] pt-12 sm:pt-16 text-xl font-bold text-[#FAEAB6] ">
-            F<span className="text-white">L</span>O
-            <span className="text-white">W</span>
-          </span>
-
+          ver Flow
         </h1>
-      </div>
-
-
-      <section
-        onClick={() => handleRedirect("/income")}
-        className="mt-3 lg:mt-7 p-2  ml-5 inline-flex justify-start shadow-[10px_0_15px_rgba(0,0,0,0.3)]  text-[#C6B796] hover:text-[#FAEAB6] rounded-full  hover:scale-110  bg-[#212735] backdrop-blur-md bg-transparent"
+        <button
+          onClick={handleLogOut}
+          className="text-md sm:text-lg lg:text-xl font-bold text-white bg-[#FAEAB6] py-1 px-4 rounded-lg hover:bg-[#f3d98b]"
         >
-        <h4 className="pl-2 flex text-4xl sm:text-5xl font-bold italic  text-nowrap">
-          Income: {incomeTotal}
-        </h4>
-      </section>
+          Logout
+        </button>
+      </header>
 
-      <div className=" flex pt-5 lg:mt-7">
-      <img
-            src="/assets/coins-solid.svg"
-            alt="back"
-            className="w-6 h-6 ml-7 mt-[5px] "
-          />
-        <h4 className="text-3xl sm:text-4xl px-1   justify-start h-full  rounded-md   underline  font-bold text-[#101e40] ">
-          Expenses
-
-        </h4>
-        <img
-            src="/assets/coins-solid.svg"
-            alt="back"
-            className="w-6 h-6  mt-[5px]"
-          />
+      <div className="flex justify-center mt-5">
+        <select
+          className="text-lg sm:text-xl p-2 rounded-md shadow-md"
+          value={selectedCurrency}
+          onChange={(e) => setSelectedCurrency(e.target.value)}
+        >
+          {currencyOptions.map((option) => (
+            <option key={option.code} value={option.code}>
+              {option.label}
+            </option>
+          ))}
+        </select>
       </div>
 
-
-      <section
-        onClick={() => handleRedirect("/core")}
-       className="mt-3 lg:mt-10 p-2  ml-5 inline-flex justify-start shadow-[10px_0_15px_rgba(0,0,0,0.3)] border-[#212735] text-[#C6B796] hover:text-[#FAEAB6] rounded-full  hover:scale-110  bg-[#212735] backdrop-blur-md bg-transparent"
-        // style={{
-        //   background:
-        //     "linear-gradient(#000000 10%, #23A461 25%, #000000 40%, #000000 58%, #23A461 74% , #000000 87%)",
-        // }}
-      >
-        <h4 className="font-bold text-4xl sm:text-5xl italic text-nowrap">
-          Core:<span className="hover:text-[]">&nbsp;{coreTotal}</span>
-
-        </h4>
-      </section>
-
-      <h1></h1>
-      <section
-        onClick={() => handleRedirect("/flow")}
-        className="mt-3 lg:mt-7 p-2  ml-5 inline-flex justify-start shadow-[10px_0_15px_rgba(0,0,0,0.3)] border-[#212735] text-[#C6B796] hover:text-[#FAEAB6] rounded-full  hover:scale-110  bg-[#212735] backdrop-blur-md bg-transparent"
-        // style={{
-        //   background:
-        //     "linear-gradient(#000000 10%, #95974E 25%, #000000 40%, #000000 58%, #95974E 74% , #000000 87%)",
-        // }}
-      >
-        <h4 className=" font-bold text-4xl sm:text-5xl italic text-nowrap ">
-          Flow: {flowTotal}
-        </h4>
-      </section>
-      <h1></h1>
-      {/* #974E4E // max-w-[350px] sm:max-w-[500px]*/}
-      <section
-        onClick={() => handleRedirect("/overflow")}
-       className="mt-3 lg:mt-7 p-2 ml-5 inline-flex justify-start shadow-[10px_0_15px_rgba(0,0,0,0.3)] border-[#212735] text-[#C6B796] hover:text-[#FAEAB6] rounded-full  hover:scale-110  bg-[#212735] backdrop-blur-md bg-transparent"
-        // style={{
-        //   background:
-        //     "linear-gradient(#000000 10%, #974E4E 25%, #000000 40%, #000000 58%, #974E4E 74% , #000000 87%)",
-        // }}
-      >
-        <h4 className="font-bold text-4xl sm:text-5xl italic  text-nowrap">
-          Overflow: {overflowTotal}
-        </h4>
-        <h4 className="flex justify-center items-center pt-5 font-bold text-4xl  text-white "></h4>
-      </section>
-
-      {/* <div className="mt-3 mx-auto flex justify-around max-w-[350px] sm:max-w-[500px]">
-        <div className="rounded-full w-20 h-20 sm:w-28 sm:h-28 border-black border-2 flex justify-center items-center">
-          <button className="">Option1</button>
+      <div className="grid grid-cols-4 gap-5 px-10 mt-10">
+        <div
+          onClick={() => handleRedirect("/income")}
+          className="bg-[#212735] text-[#FAEAB6] p-5 rounded-lg shadow-lg text-center cursor-pointer hover:scale-105 transition transform"
+        >
+          <h3 className="text-xl font-bold">Income</h3>
+          <p className="text-2xl mt-2">
+            {formatNumberWithCurrency(incomeTotal, selectedCurrency)}
+          </p>
         </div>
-        <div className="rounded-full w-20 h-20 sm:w-28 sm:h-28 border-black border-2 flex justify-center items-center">
-          <button className="">Option1</button>
+        <div
+          onClick={() => handleRedirect("/core")}
+          className="bg-[#212735] text-[#FAEAB6] p-5 rounded-lg shadow-lg text-center cursor-pointer hover:scale-105 transition transform"
+        >
+          <h3 className="text-xl font-bold">Core</h3>
+          <p className="text-2xl mt-2">
+            {formatNumberWithCurrency(coreTotal, selectedCurrency)}
+          </p>
         </div>
-        <div className="rounded-full w-20 h-20 sm:w-28 sm:h-28 border-black border-2 flex justify-center items-center">
-          <button className="">Option1</button>
+        <div
+          onClick={() => handleRedirect("/flow")}
+          className="bg-[#212735] text-[#FAEAB6] p-5 rounded-lg shadow-lg text-center cursor-pointer hover:scale-105 transition transform"
+        >
+          <h3 className="text-xl font-bold">Flow</h3>
+          <p className="text-2xl mt-2">
+            {formatNumberWithCurrency(flowTotal, selectedCurrency)}
+          </p>
         </div>
-      </div> */}
+        <div
+          onClick={() => handleRedirect("/overflow")}
+          className="bg-[#212735] text-[#FAEAB6] p-5 rounded-lg shadow-lg text-center cursor-pointer hover:scale-105 transition transform"
+        >
+          <h3 className="text-xl font-bold">Overflow</h3>
+          <p className="text-2xl mt-2">
+            {formatNumberWithCurrency(overflowTotal, selectedCurrency)}
+          </p>
+        </div>
+      </div>
+
+      <aside className="w-full mt-10 px-10">
+        <ReactCalendar
+          expenses={expenses}
+          onDateChange={(date) => {
+            const formattedDate = date.toISOString().split("T")[0];
+            fetchExpensesByDateRange(formattedDate, formattedDate);
+          }}
+        />
+      </aside>
     </div>
   );
 }

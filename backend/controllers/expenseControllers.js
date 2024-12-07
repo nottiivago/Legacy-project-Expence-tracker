@@ -23,6 +23,48 @@ let getAllExpenses = async (req, res) => {
   }
 };
 
+// _________________get expenses by date range_______________
+let getExpensesByDate = async (req, res) => {
+  try {
+    console.log("Received query parameters:", req.query); // Debugging
+
+    const userId = req.user._id;
+    const { startDate, endDate } = req.query;
+
+    if (!startDate && !endDate) {
+      return res.status(400).json({ message: "Please provide a valid date range." });
+    }
+
+    const filter = { creator: userId };
+
+    // Handle optional dates
+    if (startDate) {
+      const parsedStartDate = new Date(startDate);
+      if (isNaN(parsedStartDate)) {
+        return res.status(400).json({ message: "Invalid startDate format." });
+      }
+      filter.date = { $gte: parsedStartDate };
+    }
+
+    if (endDate) {
+      const parsedEndDate = new Date(endDate);
+      if (isNaN(parsedEndDate)) {
+        return res.status(400).json({ message: "Invalid endDate format." });
+      }
+      filter.date = { ...(filter.date || {}), $lte: parsedEndDate };
+    }
+
+    const expenses = await Expense.find(filter).populate("creator");
+    res.status(200).json(expenses);
+  } catch (error) {
+    console.error(`Error fetching expenses by date: ${error}`);
+    res.status(500).json({ message: "Failed to fetch expenses by date." });
+  }
+};
+
+
+
+
 // _________________get one expense by id__________________________
 let getExpenseById = async (req, res) => {
   try {
@@ -45,35 +87,36 @@ let getExpenseById = async (req, res) => {
 };
 
 // _________________create new expense_______________
-
 let addNewExpense = async (req, res) => {
-  const userId = req.user._id;
-
   try {
-    const newExpense = {
-      ...req.body,
-      creator: userId,
-    };
-    const createdExpense = await Expense.create(newExpense);
+      console.log("Data received in backend:", req.body); // Debugging line
+      const { title, amount, category, date } = req.body;
 
-    console.log({
-      message: "Expense created successfully",
-      data: createdExpense,
-    });
+      if (!title || !amount || !category || !date) {
+          return res.status(400).json({ message: "All fields are required." });
+      }
 
-    return res.status(201).json({
-      message: "Expense created successfully",
-      data: createdExpense,
-    });
+      const newExpense = {
+          title,
+          amount,
+          category,
+          date: new Date(date), // Ensure the date is parsed correctly
+          creator: req.user._id,
+      };
+
+      const createdExpense = await Expense.create(newExpense);
+      res.status(201).json({
+          message: "Expense created successfully",
+          data: createdExpense,
+      });
   } catch (error) {
-    console.log(`Error: ${error}`);
-    res
-      .status(500)
-      .json({ message: `Backend: Failed to create a new expense` });
+      console.error("Error creating expense:", error);
+      res.status(500).json({ message: "Failed to create a new expense." });
   }
 };
 
-//___________________________update expense data________________
+
+// _________________update expense data_______________
 let updateExpense = async (req, res) => {
   const id = req.params.id;
   const userId = req.user._id;
@@ -82,25 +125,28 @@ let updateExpense = async (req, res) => {
   try {
     const oldExpense = await Expense.findByIdAndUpdate(
       { _id: id, creator: userId },
-      updatedExpense
+      updatedExpense,
+      { new: true } // Return the updated document
     ).populate("creator");
+
     if (!oldExpense) {
       console.log(`Expense does not exist`);
-      res.status(404).json({ message: "Expense does not exist" });
+      return res.status(404).json({ message: "Expense does not exist" });
     }
-    res
-      .status(200)
-      .json({ message: "Expense updated successfully", data: updatedExpense });
+
+    res.status(200).json({
+      message: "Expense updated successfully",
+      data: oldExpense,
+    });
   } catch (error) {
-    console.log(`Error updating expense: ${error}`);
-    res
-      .status(500)
-      .json({ message: "Backend: Error updating Expense, try again later!" });
+    console.error(`Error updating expense: ${error}`);
+    res.status(500).json({
+      message: "Backend: Error updating expense, try again later!",
+    });
   }
 };
 
-//____________________delete expense_______________________
-
+// _________________delete expense_______________________
 let deleteExpense = async (req, res) => {
   const id = req.params.id;
   const userId = req.user._id;
@@ -110,21 +156,22 @@ let deleteExpense = async (req, res) => {
       _id: id,
       creator: userId,
     });
+
     if (!expenseToDelete) {
       console.log(`Expense does not exist`);
-      res.status(404).json({ message: "Expense does not exist" });
+      return res.status(404).json({ message: "Expense does not exist" });
     }
+
     res.status(200).json({ message: "Expense deleted successfully" });
   } catch (error) {
-    console.log(`Backend: Error deleting expense: ${error}`);
-    res
-      .status(500)
-      .json({ message: "Backend: Error deleting expense, try again later!" });
+    console.error(`Error deleting expense: ${error}`);
+    res.status(500).json({
+      message: "Backend: Error deleting expense, try again later!",
+    });
   }
 };
 
-//____________________delete all expenses ____________________
-
+// _________________delete all expenses ____________________
 let deleteAllExpenses = async (req, res) => {
   try {
     const userId = req.user._id;
@@ -136,15 +183,16 @@ let deleteAllExpenses = async (req, res) => {
       deletedCount: `${result.deletedCount} expenses deleted`,
     });
   } catch (error) {
-    console.log(`Error deleting expense: ${error}`);
-    res
-      .status(500)
-      .json({ message: "Backend: Error deleting expense, try again later!" });
+    console.error(`Error deleting expenses: ${error}`);
+    res.status(500).json({
+      message: "Backend: Error deleting expenses, try again later!",
+    });
   }
 };
 
 module.exports = {
   getAllExpenses,
+  getExpensesByDate,
   getExpenseById,
   addNewExpense,
   updateExpense,
