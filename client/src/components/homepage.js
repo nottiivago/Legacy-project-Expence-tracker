@@ -13,6 +13,18 @@ function Homepage() {
     fetchCategoryTotals();
   }, []);
 
+  useEffect(() => {
+    const totalExpenses = coreTotal + flowTotal + overflowTotal;
+    const threshold = incomeTotal * 0.8;
+
+    if (incomeTotal < totalExpenses) {
+      alert("Warning: Your expenses are above your income. Please adjust your budget.");
+      return;
+    } else if (totalExpenses > threshold) {
+      alert("Warning: Your expenses are above 80% of your income. Be sure to put the 20% of your income in savings!");
+    }
+  }, [coreTotal, flowTotal, overflowTotal, incomeTotal]);
+
   async function fetchCategoryTotals() {
     try {
 
