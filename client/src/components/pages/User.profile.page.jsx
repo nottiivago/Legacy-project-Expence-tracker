@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
-import '../../style/user.page.css'; // Import the CSS file
+import '../../style/user.profile.page.css'; // Import the CSS file
+const Swal = require('sweetalert2')
 
 let userValues = {
   email: '',
@@ -53,7 +54,7 @@ function UserProfilePage() {
       console.log('Failed to fetch user details.');
     }
   }
-  console.log(userDetails.image);
+  // console.log(userDetails.image);
   async function handleSaveNewCredentials(e) {
     e.preventDefault();
     const { newPassword, newPasswordConfirmation, oldPassword } = editedUserData;
@@ -75,9 +76,31 @@ function UserProfilePage() {
       setEditedUserData(res.data.user);
       setEditForm(false);
       console.log('User updated successfully:', res.data);
-      alert(res.data.msg)
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, change credentials!"
+      }).then((result) => {
+        if (result.isConfirmed) {
+          Swal.fire({
+            title: "Completed!",
+            text: "Your credentials have been changes",
+            icon: "success"
+          });
+        }
+      });
     } catch (error) {
       console.log('Failed to update user credentials:', error);
+      console.log(error);
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Something went wrong!",
+      });
       setError('Failed to update credentials.');
     }
   }
@@ -120,6 +143,7 @@ function UserProfilePage() {
                 name="lastName"
                 value={editedUserData.lastName || ''}
                 onChange={handleChange}
+                placeholder={userDetails.firstName}
               />
             </div>
             <div>
@@ -129,6 +153,7 @@ function UserProfilePage() {
                 name="oldPassword"
                 value={editedUserData.oldPassword || ''}
                 onChange={handleChange}
+                placeholder={'old password'}
               />
             </div>
             <div>
@@ -138,6 +163,7 @@ function UserProfilePage() {
                 name="newPassword"
                 value={editedUserData.newPassword || ''}
                 onChange={handleChange}
+                placeholder={'New password'}
               />
             </div>
             <div>
@@ -147,6 +173,7 @@ function UserProfilePage() {
                 name="newPasswordConfirmation"
                 value={editedUserData.newPasswordConfirmation || ''}
                 onChange={handleChange}
+                placeholder={'New password confirmation'}
               />
             </div>
             <button type="submit" className="save-button">Save changes</button>
@@ -159,8 +186,10 @@ function UserProfilePage() {
           </div>
         )}
         <button 
+        style={{backgroundColor: editForm ? 'red' : 'white'}}
           className="edit-button" 
           onClick={() => setEditForm(!editForm)}
+          
         >
           {editForm ? 'Cancel' : 'Change credentials'}
         </button>

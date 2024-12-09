@@ -12,7 +12,7 @@
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background-color: #f4f6f9;
+    background-color: #000e22;
   }
   
   .user-profile-card {
@@ -37,7 +37,7 @@
     width: 100%;
     padding: 0.75rem;
     background-color: #4caf50;
-    color: var(--font-color);
+    color: #212735;
     font-size: 1rem;
     font-weight: bold;
     border: none;
@@ -84,10 +84,7 @@
     transition: border-color 0.3s ease;
   }
   
-  .user-profile-card input:focus {
-    border-color: #4caf50;
-    outline: none;
-  }
+  
   
   .user-profile-card .user-info {
     margin-bottom: 20px;
@@ -96,37 +93,16 @@
   .user-profile-card .user-info p {
     margin: 10px 0;
     font-size: 1rem;
-    color: #333;
+    color: var(--font-color);
   }
   
   .user-profile-card .user-info p span {
     font-weight: bold;
-    color: #555;
+    color: var(--font-color);
   }
   
-  .user-profile-card .edit-button {
-    background-color: var(--main-color);
-    margin-bottom: 20px;
-  }
-  
-  .user-profile-card .edit-button:hover {
-    background-color: #0056b3;
-  }
-  
-  .user-profile-card .cancel-button {
-    background-color: #ff6347;
-    margin-top: 10px;
-  }
-  
-  .user-profile-card .cancel-button:hover {
-    background-color: #ff4500;
-  }
-  
-
-
-
   .user-profile-image{
-background-color: #ff0000;
+
 height: 50px;
 width: 50px;
   }

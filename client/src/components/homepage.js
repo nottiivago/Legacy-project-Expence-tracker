@@ -147,23 +147,25 @@ function Homepage() {
         // }}
       >
         <header className="flex justify-end pt-2 ">
+        {/* <button onClick={()=>handleRedirect("/userPage")}
+          className="text-md sm:text-xl lg:text-2xl font-bold  text-white mr-3"> User page 
+          </button> */}
+        <div>
+        <img 
+    src={`http://localhost:8080/uploads/${profileImageName}`} 
+    alt={`${firstName} ${lastName}`} 
+    className="user-profile-image" 
+    style={{ cursor: 'pointer' }} 
+    onClick={()=>handleRedirect("/userPage")}
+  />
+      <h1 style={{color:'white'}} onClick={()=>handleRedirect("/userPage")}>Welcome, {firstName} {lastName}</h1>
+    </div>
           <button
             onClick={handleLogOut}
             className="text-md sm:text-xl lg:text-2xl font-bold  text-white mr-3"
           >
             Logout
           </button>
-        <button onClick={()=>handleRedirect("/userPage")}
-          className="text-md sm:text-xl lg:text-2xl font-bold  text-white mr-3"> User page 
-        </button>
-        <div>
-        <img 
-    src={`http://localhost:8080/uploads/${profileImageName}`} 
-    alt={`${firstName} ${lastName}`} 
-    className="user-profile-image" 
-  />
-      <h1>Welcome, {firstName} {lastName}</h1>
-    </div>
         </header>
 
         <h1 className="flex justify-center pt-5 sm:pt-0 font-bold text-[#C6B796] whitespace-nowrap ">

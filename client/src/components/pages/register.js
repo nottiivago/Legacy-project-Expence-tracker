@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+const Swal = require('sweetalert2')
 
 function Register() {
   const navigate = useNavigate();
@@ -58,7 +59,14 @@ function Register() {
 
       if (response.status === 200 || response.status === 201) {
         localStorage.setItem("token", response.data.token);
-        alert(response.data.message);
+        // alert(response.data.message);
+        Swal.fire({
+          position: "top-end",
+          icon: "success",
+          title: (response.data.message),
+          showConfirmButton: false,
+          timer: 1500
+        });
       } else {
         console.warn("Unexpected navigating error response:", response);
       }
