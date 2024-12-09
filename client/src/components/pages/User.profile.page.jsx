@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
+import '../../style/user.page.css'; // Import the CSS file
 
 let userValues = {
   email: '',
@@ -53,10 +54,8 @@ function UserProfilePage() {
 
   async function handleSaveNewCredentials(e) {
     e.preventDefault();
-
     const { newPassword, newPasswordConfirmation, oldPassword } = editedUserData;
 
-    // Check if passwords match
     if (newPassword !== newPasswordConfirmation) {
       setError("Passwords don't match!");
       return;
@@ -67,16 +66,8 @@ function UserProfilePage() {
     try {
       const res = await axios.put(
         `http://localhost:8080/users/updateUser/${userId}`,
-        {
-          ...editedUserData,
-          oldPassword,
-          newPassword,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-        }
+        { ...editedUserData, oldPassword, newPassword },
+        { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
       );
       setUserDetails(res.data.user);
       setEditedUserData(res.data.user);
@@ -89,88 +80,79 @@ function UserProfilePage() {
   }
 
   return (
-    <>
-      <button onClick={() => setEditForm(!editForm)}>
-        {editForm ? 'Cancel' : 'Change credentials'}
-      </button>
+    <div className="user-profile-container">
+      <div className="user-profile-card">
+        <h2>{userDetails.firstName} {userDetails.lastName}</h2>
 
-      {error && <div className="error">{error}</div>}
 
-      {editForm ? (
-        <form onSubmit={handleSaveNewCredentials}>
-          <div>
-            <label htmlFor="firstName">First Name</label>
-            <input
-              type="text"
-              placeholder="First Name"
-              name="firstName"
-              value={editedUserData.firstName || ''}
-              onChange={handleChange}
-            />
+        {error && <div className="error">{error}</div>}
+
+        {editForm ? (
+          <form onSubmit={handleSaveNewCredentials}>
+            <div>
+              <label htmlFor="firstName">First Name</label>
+              <input
+                type="text"
+                name="firstName"
+                value={editedUserData.firstName || ''}
+                onChange={handleChange}
+                placeholder={userDetails.firstName}
+              />
+            </div>
+            <div>
+              <label htmlFor="lastName">Last Name</label>
+              <input
+                type="text"
+                name="lastName"
+                value={editedUserData.lastName || ''}
+                onChange={handleChange}
+              />
+            </div>
+            <div>
+              <label htmlFor="oldPassword">Old Password</label>
+              <input
+                type="password"
+                name="oldPassword"
+                value={editedUserData.oldPassword || ''}
+                onChange={handleChange}
+              />
+            </div>
+            <div>
+              <label htmlFor="newPassword">New Password</label>
+              <input
+                type="password"
+                name="newPassword"
+                value={editedUserData.newPassword || ''}
+                onChange={handleChange}
+              />
+            </div>
+            <div>
+              <label htmlFor="newPasswordConfirmation">New Password Confirmation</label>
+              <input
+                type="password"
+                name="newPasswordConfirmation"
+                value={editedUserData.newPasswordConfirmation || ''}
+                onChange={handleChange}
+              />
+            </div>
+            <button type="submit" className="save-button">Save changes</button>
+          </form>
+        ) : (
+          <div className="user-info">
+            <p><span>First name:</span> {userDetails.firstName}</p>
+            <p><span>Last name:</span> {userDetails.lastName}</p>
+            <p><span>Email:</span> {userDetails.email}</p>
           </div>
-          <div>
-            <label htmlFor="lastName">Last Name</label>
-            <input
-              type="text"
-              placeholder="Last Name"
-              name="lastName"
-              value={editedUserData.lastName || ''}
-              onChange={handleChange}
-            />
-          </div>
-          <div>
-            <label htmlFor="oldPassword">Old Password</label>
-            <input
-              type="password"
-              placeholder="Old Password"
-              name="oldPassword"
-              value={editedUserData.oldPassword || ''}
-              onChange={handleChange}
-            />
-          </div>
-          <div>
-            <label htmlFor="newPassword">New Password</label>
-            <input
-              type="password"
-              placeholder="New Password"
-              name="newPassword"
-              value={editedUserData.newPassword || ''}
-              onChange={handleChange}
-            />
-          </div>
-          <div>
-            <label htmlFor="newPasswordConfirmation">New Password Confirmation</label>
-            <input
-              type="password"
-              placeholder="Confirm New Password"
-              name="newPasswordConfirmation"
-              value={editedUserData.newPasswordConfirmation || ''}
-              onChange={handleChange}
-            />
-          </div>
-          <button type="submit">Save changes</button>
-        </form>
-      ) : (
-        <div className="d-flex flex-column">
-          <div className="firstName d-flex p-2 flex-row mb-3">
-            <p>First name: {userDetails.firstName}</p>
-          </div>
-          <div className="lastName">
-            <p>Last name: {userDetails.lastName}</p>
-          </div>
-          <div className="password">
-            <p>Password: ********</p>
-          </div>
-          <div className="email">
-            <p>Email: {userDetails.email}</p>
-          </div>
-        </div>
-      )}
-    </>
+        )}
+        <button 
+          className="edit-button" 
+          onClick={() => setEditForm(!editForm)}
+        >
+          {editForm ? 'Cancel' : 'Change credentials'}
+        </button>
+      </div>
+    </div>
   );
 }
 
 export default UserProfilePage;
-
-
-
