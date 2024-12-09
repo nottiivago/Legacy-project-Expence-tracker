@@ -4,6 +4,7 @@ import ProtectedRoute from "./hooks/ProtectedRoute";
 import Fixed from "./components/fixed";
 import Login from "./components/pages/login";
 import Register from "./components/pages/register";
+import UserProfilePage from "./components/pages/User.profile.page";
 
 function App() {
   return (
@@ -47,6 +48,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Fixed />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/userPage"
+            element={
+              <ProtectedRoute>
+                <UserProfilePage />
               </ProtectedRoute>
             }
           />

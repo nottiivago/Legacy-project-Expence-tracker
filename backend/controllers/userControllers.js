@@ -85,7 +85,7 @@ let getUserById = async (req, res) => {
 const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/;
 
 let addNewUser = async (req, res) => {
-  const { firstName, lastName, email, password } = req.body;
+  const { firstName, lastName, email, password, } = req.body;
   try {
     if (!firstName || !lastName || !email || !password) {
       return res.status(400).json({ message: "All fields are required!!" });
@@ -104,13 +104,20 @@ let addNewUser = async (req, res) => {
       });
     }
 
+
+     //  Handle the uploaded image (optional)
+     let profileImage = null;
+     if (req.file) {
+       profileImage = req.file.filename; // The filename assigned by multer
+      }
+
     const hashPassword = await bcrypt.hash(password, saltRounds);
     const newUser = {
       firstName,
       lastName,
       email,
       password: hashPassword,
-      image: null,
+      image: profileImage,
     };
     const createdUser = await User.create(newUser);
 
