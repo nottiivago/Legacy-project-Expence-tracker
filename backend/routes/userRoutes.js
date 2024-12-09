@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const upload = require('../middleware/upload.image.jsx')
 
 const {
   getAllUsers,
@@ -21,6 +22,6 @@ router.delete("/deleteAllUsers", verifyToken, deleteAllUsers); //===> delete all
 
 // public routes
 router.post("/login", logIn); //===> log in
-router.post("/register", addNewUser); //===> register
+router.post("/register",upload.single('image'), addNewUser); //===> register
 
 module.exports = router;
