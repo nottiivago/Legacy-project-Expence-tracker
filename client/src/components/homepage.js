@@ -142,13 +142,13 @@ function Homepage() {
         backgroundAttachment: "fixed",
       }}
     >
-      <div
+      <div 
         className="h-[148px] mx-auto bg-[#212735] relative shadow-sm "
         // style={{
         //   background:
         //     "linear-gradient(to right, #000000 5%, #CBBD29 55%,  #000000 92%) ",
         // }}
-      >
+        >
         <header className="flex justify-end pt-2 ">
           <button
             onClick={handleLogOut}
@@ -158,10 +158,12 @@ function Homepage() {
           </button>
         </header>
 
+        <div className="flex justify-evenly">
           <div className="flex items-center gap-3">
             <h1 className="text-[#C6B796] text-start mb-2">
-              The percentage of income<br /> at which the
-              user wants to<br /> receive a warning.
+              The percentage of income
+              at which<br /> you want to
+              receive a warning.
             </h1>
             <input
               type="number"
@@ -175,25 +177,25 @@ function Homepage() {
             <h1 className="text-[#C6B796] text-3xl">%</h1>
           </div>
 
-        <h1 className="flex justify-center pt-5 sm:pt-0 font-bold text-[#C6B796] whitespace-nowrap ">
-          <span className="text-6xl sm:text-7xl   px-1">
-            Cash
-            <span className="inline-block h-[45px] w-[45px] sm:w-[57px] sm:h-[57px]  mx-1 overflow-hidden rounded-full scale-110">
-              <img
-                src="/assets/Logo1.webp"
-                alt="logo"
-                className="w-full h-full object-cover object-center"
-              />
+          <h1 className="flex justify-center pt-5 sm:pt-0 font-bold text-[#C6B796] whitespace-nowrap ">
+            <span className="text-6xl sm:text-7xl px-1">
+              Cash
+              <span className="inline-block h-[45px] w-[45px] sm:w-[57px] sm:h-[57px]  mx-1 overflow-hidden rounded-full scale-110">
+                <img
+                  src="/assets/Logo1.webp"
+                  alt="logo"
+                  className="w-full h-full object-cover object-center"
+                />
+              </span>
+              ver
             </span>
-            ver
-          </span>
-          <span className="  transform ml-[-20px] sm:ml-[-25px] pt-12 sm:pt-16 text-xl font-bold text-[#FAEAB6] ">
-            F<span className="text-white">L</span>O
-            <span className="text-white">W</span>
-          </span>
-        </h1>
+            <span className="  transform ml-[-20px] sm:ml-[-25px] pt-12 sm:pt-16 text-xl font-bold text-[#FAEAB6] ">
+              F<span className="text-white">L</span>O
+              <span className="text-white">W</span>
+            </span>
+          </h1>
+        </div>
       </div>
-
       <section
         onClick={() => handleRedirect("/income")}
         className="mt-3 lg:mt-7 p-2  ml-5 inline-flex justify-start shadow-[10px_0_15px_rgba(0,0,0,0.3)]  text-[#C6B796] hover:text-[#FAEAB6] rounded-full  hover:scale-110  bg-[#212735] backdrop-blur-md bg-transparent"
