@@ -1,4 +1,4 @@
-import { BrowserRoutes, Routes, Route, BrowserRouter } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Homepage from "./components/homepage";
 import ProtectedRoute from "./hooks/ProtectedRoute";
 import Fixed from "./components/fixed";
@@ -23,7 +23,7 @@ function App() {
             path="/core"
             element={
               <ProtectedRoute>
-                <Fixed />
+                <Fixed category="core" />
               </ProtectedRoute>
             }
           />
@@ -31,7 +31,7 @@ function App() {
             path="/flow"
             element={
               <ProtectedRoute>
-                <Fixed />
+                <Fixed category="flow" />
               </ProtectedRoute>
             }
           />
@@ -39,7 +39,7 @@ function App() {
             path="/overflow"
             element={
               <ProtectedRoute>
-                <Fixed />
+                <Fixed category="overflow" />
               </ProtectedRoute>
             }
           />
@@ -47,7 +47,7 @@ function App() {
             path="/income"
             element={
               <ProtectedRoute>
-                <Fixed />
+                <Fixed category="income" />
               </ProtectedRoute>
             }
           />

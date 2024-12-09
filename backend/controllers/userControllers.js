@@ -1,6 +1,8 @@
+require("dotenv").config();
 const User = require("../schemas/userSchema.js");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+
 
 const saltRounds = +process.env.SALT_ROUNDS;
 
