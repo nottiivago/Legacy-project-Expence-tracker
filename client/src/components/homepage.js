@@ -29,18 +29,18 @@ function Homepage() {
     localStorage.setItem('customPercentage', customPercentage);
   }, [customPercentage]);
 
-  // useEffect(() => {
-  //   // Check whenever customPercentage changes
-  //   const totalExpenses = coreTotal + flowTotal + overflowTotal;
-  //   const threshold = incomeTotal * (customPercentage / 100);
+  useEffect(() => {
+    // Check whenever customPercentage changes
+    const totalExpenses = coreTotal + flowTotal + overflowTotal;
+    const threshold = incomeTotal * (customPercentage / 100);
   
-  //   if (totalExpenses > incomeTotal) {
-  //     alert("Warning: Your total expenses are above your income. Please adjust your budget.");
-  //   } else if (totalExpenses > threshold) {
-  //     const remainings = 100 - customPercentage;
-  //     alert(`Warning: Your expenses are above ${customPercentage}% of your income. Be sure to put ${remainings}% of your income in the saving!`);
-  //   }
-  // }, [customPercentage, coreTotal, flowTotal, overflowTotal, incomeTotal]);
+    if (totalExpenses > incomeTotal) {
+      alert("Warning: Your total expenses are above your income. Please adjust your budget.");
+    } else if (totalExpenses > threshold) {
+      const remainings = 100 - customPercentage;
+      alert(`Warning: Your expenses are above ${customPercentage}% of your income. Be sure to put ${remainings}% of your income in the saving!`);
+    }
+  }, [customPercentage, coreTotal, flowTotal, overflowTotal, incomeTotal]);
 
   async function fetchCategoryTotals() {
     try {
