@@ -2,28 +2,45 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-
 function Homepage() {
   const [incomeTotal, setIncomeTotal] = useState(0);
   const [coreTotal, setCoreTotal] = useState(0);
   const [flowTotal, setFlowTotal] = useState(0);
   const [overflowTotal, setOverflowTotal] = useState(0);
+  const [customPercentage, setCustomPercentage] = useState(() => {
+  const savedPercentage = localStorage.getItem('customPercentage');
+    return savedPercentage ? Number(savedPercentage) : 80;
+  });
 
   useEffect(() => {
     fetchCategoryTotals();
   }, []);
 
   useEffect(() => {
-    const totalExpenses = coreTotal + flowTotal + overflowTotal;
-    const threshold = incomeTotal * 0.8;
-
-    if (incomeTotal < totalExpenses) {
-      alert("Warning: Your expenses are above your income. Please adjust your budget.");
-      return;
-    } else if (totalExpenses > threshold) {
-      alert("Warning: Your expenses are above 80% of your income. Be sure to put the 20% of your income in savings!");
+    // Retrieve the custom percentage from local storage when the component mounts
+    const savedPercentage = localStorage.getItem('customPercentage');
+    if (savedPercentage) {
+      setCustomPercentage(Number(savedPercentage));
     }
-  }, [coreTotal, flowTotal, overflowTotal, incomeTotal]);
+  }, []);
+
+  useEffect(() => {
+    // Save the custom percentage to local storage whenever it changes
+    localStorage.setItem('customPercentage', customPercentage);
+  }, [customPercentage]);
+
+  // useEffect(() => {
+  //   // Check whenever customPercentage changes
+  //   const totalExpenses = coreTotal + flowTotal + overflowTotal;
+  //   const threshold = incomeTotal * (customPercentage / 100);
+  
+  //   if (totalExpenses > incomeTotal) {
+  //     alert("Warning: Your total expenses are above your income. Please adjust your budget.");
+  //   } else if (totalExpenses > threshold) {
+  //     const remainings = 100 - customPercentage;
+  //     alert(`Warning: Your expenses are above ${customPercentage}% of your income. Be sure to put ${remainings}% of your income in the saving!`);
+  //   }
+  // }, [customPercentage, coreTotal, flowTotal, overflowTotal, incomeTotal]);
 
   async function fetchCategoryTotals() {
     try {
@@ -142,6 +159,16 @@ function Homepage() {
             Logout
           </button>
         </header>
+
+        <input
+          type="number"
+          value={customPercentage}
+          onChange={(e) => setCustomPercentage(e.target.value)} 
+          min="0"
+          max="100"
+          className="bg-[#C6B796] w-1/4 border border-[#101e40] text-center sm:text-xl lg:text-2xl placeholder-[#881348]"
+          placeholder="Set warning percentage"
+        />
 
         <h1 className="flex justify-center pt-5 sm:pt-0 font-bold text-[#C6B796] whitespace-nowrap ">
           <span className="text-6xl sm:text-7xl   px-1">
