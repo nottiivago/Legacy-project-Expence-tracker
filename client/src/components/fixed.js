@@ -1,34 +1,38 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 let expenseInitialValue = {
-  title: "",
+  tittle: "",
   amount: "",
   category: "",
-  date: new Date().toISOString().split("T")[0], // Default today's date
 };
 
-function Fixed() {
+function Fixed({}) {
   const [expenseData, setExpenseData] = useState(expenseInitialValue);
   const [categoryExpenses, setCategoryExpenses] = useState([]);
-  const [editingExpenseId, setEditingExpenseId] = useState(null);
-  const [editingExpenseData, setEditingExpenseData] = useState(expenseInitialValue);
+  const [editingExpenseId, setEditingExpenseId] = useState(null); //monitors the expense in edit mode by keeping track of the ID
+  const [editingExpenseData, setEditingExpenseData] =
+    useState(expenseInitialValue); // holds the data of the expense being edited {title:, amount: etc}
   const [categoryTotal, setCategoryTotal] = useState(0);
 
   const location = useLocation();
   const navigate = useNavigate();
   const category = location.pathname.replace("/", ""); // Extract category from URL
+ 
 
   useEffect(() => {
     getExpenses();
     calculateCategoryTotal();
-    setExpenseData((prev) => ({ ...prev, category })); // Update the category
+    setExpenseData((prev) => ({ ...prev, category })); // Resets expense data category when the category changes, ensures the category is always up to date
   }, [category]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name === "amount" && value > 999999) return; // Restrict maximum amount
+    if (name === "amount" && value > 999999) {
+      return;
+    }
     setExpenseData({
       ...expenseData,
       [name]: value,
@@ -37,7 +41,9 @@ function Fixed() {
 
   const handleEditChange = (e) => {
     const { name, value } = e.target;
-    if (name === "amount" && value > 999999) return;
+    if (name === "amount" && value > 999999) {
+      return;
+    }
     setEditingExpenseData({
       ...editingExpenseData,
       [name]: value,
@@ -52,7 +58,6 @@ function Fixed() {
 
   async function createNewExpense() {
     try {
-      console.log("Expense data being sent:", expenseData); // Debugging line
       const res = await axios.post(
         "http://localhost:8080/expenses/addNewExpense",
         expenseData,
@@ -62,21 +67,16 @@ function Fixed() {
           },
         }
       );
-      console.log("Expense created:", res.data);
-      setExpenseData((prev) => ({
-        ...prev,
-        title: "",
-        amount: "",
-        date: new Date().toISOString().split("T")[0],
-      }));
+      setExpenseData((prev) => ({ ...prev, tittle: "", amount: "" }));
+      console.log(res.data);
       getExpenses();
       calculateCategoryTotal();
     } catch (error) {
-      console.error("Error creating expense:", error);
+      console.log(error);
     }
   }
 
-  async function getExpenses() {
+  async function getExpenses(z) {
     try {
       const res = await axios.get(
         `http://localhost:8080/expenses/allExpenses/${category}`,
@@ -86,16 +86,18 @@ function Fixed() {
           },
         }
       );
-      console.log("Expenses fetched:", res.data);
       setCategoryExpenses(res.data);
+      //   const total = res.data.reduce((sum, item) => sum + item.amount, 0);
+      // console.log(res.data);
+      //   calculateCategoryTotal(); // Update the total after fetching expenses (I think not needed)
     } catch (error) {
-      console.error("Error fetching expenses:", error);
+      console.log(error);
     }
   }
 
   async function updateExpense(expenseId) {
+    //this is x
     try {
-      console.log("Updating expense:", editingExpenseData);
       const res = await axios.put(
         `http://localhost:8080/expenses/updateExpense/${expenseId}`,
         editingExpenseData,
@@ -105,38 +107,51 @@ function Fixed() {
           },
         }
       );
-      console.log("Expense updated:", res.data);
       setEditingExpenseId(null);
+      console.log(res.data);
       setEditingExpenseData(expenseInitialValue);
       getExpenses();
-      calculateCategoryTotal();
+      calculateCategoryTotal(); 
     } catch (error) {
-      console.error("Error updating expense:", error);
+      console.log(error);
     }
   }
 
   async function deleteExpense(expenseId) {
     try {
-      console.log("Deleting expense with ID:", expenseId);
-      const res = await axios.delete(
-        `http://localhost:8080/expenses/deleteExpense/${expenseId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-      console.log("Expense deleted:", res.data);
+let res = await axios.delete(
+  `http://localhost:8080/expenses/deleteExpense/${expenseId}`,
+  {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  }
+);
+
+      console.log(res.data);
       getExpenses();
-      calculateCategoryTotal();
+      calculateCategoryTotal(); 
     } catch (error) {
-      console.error("Error deleting expense:", error);
+      console.log(error);
     }
   }
 
+  //   async function deleteAllExpense() {
+  //     try {
+  //       let res = await axios.delete(
+  //         `http://localhost:8080/expenses/deleteAllExpenses`
+  //       );
+
+  //       console.log(res.data);
+  //       getExpenses();
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   }
+
   async function calculateCategoryTotal() {
     try {
-      const res = await axios.get(
+      let res = await axios.get(
         `http://localhost:8080/expenses/allExpenses/${category}`,
         {
           headers: {
@@ -144,11 +159,11 @@ function Fixed() {
           },
         }
       );
-      const total = res.data.reduce((sum, item) => sum + Number(item.amount), 0);
-      setCategoryTotal(total);
-      console.log("Category total:", total);
+      let total = res.data.reduce((sum, item) => sum + Number(item.amount), 0);
+      setCategoryTotal(total); // Update the state variable with the total amount
+      // console.log(res.data);
     } catch (error) {
-      console.error("Error calculating total:", error);
+      console.log(error);
     }
   }
 
@@ -156,7 +171,7 @@ function Fixed() {
     <div className="min-h-screen min-w-screen bg-[#212735]">
       <div className="w-full flex justify-center mx-auto">
         <button
-          className="flex justify-start mt-3"
+          className="flex justify-start mt-3 "
           onClick={() => navigate("/")}
         >
           <img
@@ -169,75 +184,83 @@ function Fixed() {
           {category.charAt(0).toUpperCase() + category.slice(1)}
         </h1>
       </div>
-
-      <div className="mx-auto flex justify-center my-5">
+      <div className="mx-auto flex justify-center  my-5 ">
         <button
-          className="text-[#FAEAB6] hover:scale-[1.3] ml-3 text-xl sm:text-2xl lg:text-3xl px-1"
+          className="text-[#FAEAB6] hover:scale-[1.3] ml-3 text-xl sm:text-2xl lg:text-3xl  px-1 "
           onClick={createNewExpense}
         >
-          Add
+          Add{" "}
         </button>
-        <div className="inline-flex">
+        <div className="inline-flex ">
+
           <input
             onChange={handleChange}
             onKeyDown={handleEnter}
-            placeholder="Title"
-            name="title"
-            value={expenseData.title}
+            placeholder="tittle"
+            name="tittle"
+            value={expenseData.tittle}
             className="max-w-[100px] sm:max-w-[150px] lg:max-w-[200px] sm:text-xl lg:text-2xl ml-3 bg-[rgba(255,255,255,0.87)] rounded-lg"
-            maxLength="50"
+            maxLength="10"
           />
           <input
             onChange={handleChange}
             onKeyDown={handleEnter}
-            placeholder="Amount"
+            placeholder="amount"
             type="number"
             name="amount"
             value={expenseData.amount}
-            className="max-w-[100px] sm:max-w-[150px] lg:max-w-[200px] sm:text-xl lg:text-2xl ml-3 bg-[rgba(255,255,255,0.87)] rounded-lg"
-            max="999999"
+            className="max-w-[100px] sm:max-w-[150px] lg:max-w-[200px] sm:text-xl lg:text-2xl  ml-3 bg-[rgba(255,255,255,0.87)] rounded-lg"
+            max="99999"
           />
         </div>
       </div>
 
+      {/* <button onClick={getExpenses} className="mr-5 ">All fixed costs</button>
+      <button className="ml-5" onClick={deleteAllExpense}>delete all</button> */}
+
+      {/* When edit is clicked */}{/* inside edit */}
       {categoryExpenses.map((x, index) => (
-        <div key={index} className="flex items-center my-2">
-          <ul className="flex w-full">
+        <div key={index} className="flex items-center my-2 ">
+          <ul className="flex w-full ">
             {editingExpenseId === x._id ? (
               <>
+                {/* text-[#C6B796] text-[#FAEAB6] */}
                 <li className="flex-1 p-2 bg-[rgb(214,200,156)] rounded-l-lg">
                   <input
                     onChange={handleEditChange}
-                    placeholder="Title"
-                    name="title"
-                    value={editingExpenseData.title}
+                    placeholder="tittle"
+                    name="tittle"
+                    value={editingExpenseData.tittle}
                     className="max-w-[100px] bg-[rgba(255,255,255,0.87)] sm:text-xl lg:text-2xl border border-[#212735] rounded-lg"
-                    maxLength="50"
+                    maxLength="10"
                   />
                 </li>
 
                 <li className="flex-1 bg-[rgb(198,183,150)] pt-2">
                   <input
                     onChange={handleEditChange}
-                    placeholder="Amount"
+                    placeholder="amount"
                     type="number"
                     name="amount"
                     value={editingExpenseData.amount}
                     className="max-w-[100px] ml-2 bg-[rgba(255,255,255,0.87)] sm:text-xl lg:text-2xl border border-[#212735] rounded-lg"
-                    max="999999"
+                    max="99999"
                   />
                 </li>
               </>
             ) : (
+              //  added info - display
               <>
-                <li className="flex-1 p-2 bg-[rgba(214,200,156,0.87)] sm:text-xl lg:text-2xl text-[#212735] rounded-l-lg">
-                  {x.title}
+                <li className="flex-1 p-2  bg-[rgba(214,200,156,0.87)] sm:text-xl lg:text-2xl text-[#212735] rounded-l-lg">
+                  {" "}
+                  {x.tittle}
                 </li>
                 <li className="flex-1 bg-[rgb(198,183,150)] p-2 sm:text-xl lg:text-2xl text-[#212735]">
                   {x.amount}
                 </li>
               </>
             )}
+            {/* inside edit */}
             {editingExpenseId === x._id ? (
               <>
                 <button
@@ -258,9 +281,10 @@ function Fixed() {
                 <button
                   className="px-3 bg-[white] sm:text-xl lg:text-2xl"
                   onClick={() => {
+                    console.log("Editing:", x);
                     setEditingExpenseId(x._id);
                     setEditingExpenseData({
-                      title: x.title,
+                      tittle: x.tittle,
                       amount: x.amount,
                       category,
                     });
@@ -280,13 +304,14 @@ function Fixed() {
         </div>
       ))}
 
+      {/* total  */}
       <div className="mx-auto flex justify-center mt-5">
         <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#FAEAB6]">
-          Total: {categoryTotal}
+          Total:{categoryTotal}{" "}
         </h2>
+
       </div>
     </div>
   );
 }
-
 export default Fixed;

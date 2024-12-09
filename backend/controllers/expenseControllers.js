@@ -132,53 +132,75 @@ let updateExpense = async (req, res) => {
   const updatedExpense = req.body;
 
   try {
+    console.log("Updating expense:", updatedExpense); // Debugging
+    console.log("Expense ID:", id); // Debugging
+    console.log("User ID:", userId); // Debugging
+
+    // Validate Expense ID
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid expense ID." });
+    }
+
+    // Update the expense
     const oldExpense = await Expense.findOneAndUpdate(
-      { _id: mongoose.Types.ObjectId(id), creator: mongoose.Types.ObjectId(userId) },
-      updatedExpense,
-      { new: true }
+      {
+        _id: new mongoose.Types.ObjectId(id), // Use `new` here
+        creator: new mongoose.Types.ObjectId(userId), // Use `new` here
+      },
+      updatedExpense, // Updated fields
+      { new: true, runValidators: true } // Return updated document and validate data
     ).populate("creator");
 
     if (!oldExpense) {
-      console.log(`Expense does not exist`);
-      return res.status(404).json({ message: "Expense does not exist" });
+      console.error("Expense not found for update:", id);
+      return res.status(404).json({ message: "Expense not found." });
     }
 
     res.status(200).json({
-      message: "Expense updated successfully",
+      message: "Expense updated successfully.",
       data: oldExpense,
     });
   } catch (error) {
-    console.error(`Error updating expense: ${error}`);
+    console.error("Error updating expense:", error.message, error);
     res.status(500).json({
-      message: "Error updating expense, try again later!",
+      message: "Failed to update expense.",
     });
   }
 };
+
 
 // _________________delete expense_______________________
 let deleteExpense = async (req, res) => {
-  const id = req.params.id;
-  const userId = req.user._id;
-
   try {
+    const { id } = req.params;
+    const userId = req.user._id;
+
+    console.log("Attempting to delete expense with ID:", id); // Debugging
+    console.log("Authenticated User ID:", userId);
+
+    // Validate Expense ID
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid expense ID." });
+    }
+
+    // Use `new` keyword for ObjectId
     const expenseToDelete = await Expense.findOneAndDelete({
-      _id: mongoose.Types.ObjectId(id),
-      creator: mongoose.Types.ObjectId(userId),
+      _id: new mongoose.Types.ObjectId(id), // Fixed
+      creator: new mongoose.Types.ObjectId(userId), // Fixed
     });
 
     if (!expenseToDelete) {
-      console.log(`Expense does not exist`);
-      return res.status(404).json({ message: "Expense does not exist" });
+      console.error("Expense not found with ID:", id);
+      return res.status(404).json({ message: "Expense not found." });
     }
 
-    res.status(200).json({ message: "Expense deleted successfully" });
+    res.status(200).json({ message: "Expense deleted successfully." });
   } catch (error) {
-    console.error(`Error deleting expense: ${error}`);
-    res.status(500).json({
-      message: "Error deleting expense, try again later!",
-    });
+    console.error("Error deleting expense:", error.message, error);
+    res.status(500).json({ message: "Failed to delete expense." });
   }
 };
+
 
 // _________________delete all expenses ____________________
 let deleteAllExpenses = async (req, res) => {
