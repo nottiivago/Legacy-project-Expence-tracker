@@ -1,19 +1,28 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+
 import ReactCalendar from "./ReactCalendar";
 import ReactCharts from "./ReactCharts";
 import { formatNumberWithCurrency } from "../utils/currencyUtils";
+
 
 function Homepage() {
   const [incomeTotal, setIncomeTotal] = useState(0);
   const [coreTotal, setCoreTotal] = useState(0);
   const [flowTotal, setFlowTotal] = useState(0);
   const [overflowTotal, setOverflowTotal] = useState(0);
+
+  const [customPercentage, setCustomPercentage] = useState(() => {
+    const savedPercentage = localStorage.getItem("customPercentage");
+    return savedPercentage ? Number(savedPercentage) : 80;
+  });
+
   const [expenses, setExpenses] = useState([]);
   const [selectedCurrency, setSelectedCurrency] = useState("EUR");
 
   const navigate = useNavigate();
+
 
   useEffect(() => {
     const today = new Date();
@@ -34,8 +43,58 @@ function Homepage() {
   />
   
 
+  useEffect(() => {
+    // Retrieve the custom percentage from local storage when the component mounts
+    const savedPercentage = localStorage.getItem("customPercentage");
+    if (savedPercentage) {
+      setCustomPercentage(Number(savedPercentage));
+    }
+  }, []);
+
+  useEffect(() => {
+    // Save the custom percentage to local storage whenever it changes
+    localStorage.setItem("customPercentage", customPercentage);
+  }, [customPercentage]);
+
+  useEffect(() => {
+    // Check whenever customPercentage changes
+    const totalExpenses = coreTotal + flowTotal + overflowTotal;
+    const threshold = incomeTotal * (customPercentage / 100);
+
+    if (totalExpenses > incomeTotal) {
+      alert(
+        "Warning: Your total expenses are above your income. Please adjust your budget."
+      );
+    } else if (totalExpenses > threshold) {
+      const remainings = 100 - customPercentage;
+      alert(
+        `Warning: Your expenses are above ${customPercentage}% of your income. Be sure to put ${remainings}% of your income in the saving!`
+      );
+    }
+  }, [customPercentage, coreTotal, flowTotal, overflowTotal, incomeTotal]);
+
   async function fetchCategoryTotals() {
     try {
+
+      const coreRes = await axios.get(
+        "http://localhost:8080/expenses/allExpenses/core",
+
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      const flowRes = await axios.get(
+        "http://localhost:8080/expenses/allExpenses/flow",
+
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+
       const headers = {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       };
@@ -57,16 +116,40 @@ function Homepage() {
 
       setCoreTotal(
         coreRes.data.reduce((sum, item) => sum + Number(item.amount), 0)
+
       );
       setFlowTotal(
         flowRes.data.reduce((sum, item) => sum + Number(item.amount), 0)
       );
+
+
+      const coreTotal = coreRes.data.reduce(
+        (sum, item) => sum + Number(item.amount),
+        0
+
       setOverflowTotal(
         overflowRes.data.reduce((sum, item) => sum + Number(item.amount), 0)
+
       );
       setIncomeTotal(
         incomeRes.data.reduce((sum, item) => sum + Number(item.amount), 0)
       );
+
+      const overflowTotal = overflowRes.data.reduce(
+        (sum, item) => sum + Number(item.amount),
+        0
+      );
+      const incomeTotal = incomeRes.data.reduce(
+        (sum, item) => sum + Number(item.amount),
+        0
+      );
+
+      setCoreTotal(coreTotal);
+      setFlowTotal(flowTotal);
+      setOverflowTotal(overflowTotal);
+
+      setIncomeTotal(incomeTotal);
+
     } catch (error) {
       console.error("Error fetching category totals:", error);
     }
@@ -81,6 +164,7 @@ function Homepage() {
         }
       );
       setExpenses(response.data);
+
     } catch (error) {
       console.error("Error fetching expenses by date range:", error);
     }
@@ -106,13 +190,18 @@ function Homepage() {
     <div
       className="min-h-screen w-screen flex flex-col"
       style={{
+
+        backgroundImage: "url('assets/Check-BGCREDIT.jpg')",
+
         backgroundImage: "url('/assets/Check-BGCREDIT.jpg')",
+
         backgroundRepeat: "no-repeat",
         backgroundPosition: "bottom",
         backgroundSize: "100% 100%",
         backgroundAttachment: "fixed",
       }}
     >
+
       <header className="flex justify-between items-center px-5 py-3 bg-[#212735] shadow-md">
         <h1 className="text-[#C6B796] text-4xl font-bold flex items-center">
           Cash
@@ -132,7 +221,24 @@ function Homepage() {
           Logout
         </button>
       </header>
-
+<div className="flex justify-evenly">
+          <div className="flex items-center gap-3">
+            <h1 className="text-[#C6B796] text-start mb-2">
+              The percentage of income
+              at which<br /> you want to
+              receive a warning.
+            </h1>
+            <input
+              type="number"
+              value={customPercentage}
+              onChange={(e) => setCustomPercentage(e.target.value)}
+              min="0"
+              max="100"
+              className="bg-[#C6B796] w-12 rounded-lg border border-[#101e40] text-center sm:text-xl lg:text-2xl placeholder-[#881348]"
+              placeholder="Set warning percentage"
+            />
+            <h1 className="text-[#C6B796] text-3xl">%</h1>
+          </div>
       <div className="flex justify-start mt-5 px-10">
         <select
           className="text-lg sm:text-xl p-2 rounded-md shadow-md"
