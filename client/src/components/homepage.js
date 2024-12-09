@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import ReactCalendar from "./ReactCalendar"; // Import your ReactCalendar component
-import { formatNumberWithCurrency } from "../utils/currencyUtils"; // Ensure this import works
+import ReactCalendar from "./ReactCalendar";
+import ReactCharts from "./ReactCharts";
+import { formatNumberWithCurrency } from "../utils/currencyUtils";
 
 function Homepage() {
   const [incomeTotal, setIncomeTotal] = useState(0);
@@ -15,15 +16,23 @@ function Homepage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchCategoryTotals();
     const today = new Date();
-    const lastMonth = new Date();
-    lastMonth.setDate(today.getDate() - 30); // Default range: last 30 days
+    const lastMonth = new Date(today);
+    lastMonth.setDate(today.getDate() - 30); // Go back 30 days
+  
+    fetchCategoryTotals();
     fetchExpensesByDateRange(
-      lastMonth.toISOString().split("T")[0],
-      today.toISOString().split("T")[0]
+      lastMonth.toISOString().split("T")[0], // Properly set startDate
+      today.toISOString().split("T")[0]     // Properly set endDate
     );
   }, [selectedCurrency]);
+  
+  <ReactCharts
+    token={localStorage.getItem("token")}
+    startDate={new Date(new Date().setDate(new Date().getDate() - 30)).toISOString().split("T")[0]} // 30 days ago
+    endDate={new Date().toISOString().split("T")[0]} // Today
+  />
+  
 
   async function fetchCategoryTotals() {
     try {
@@ -32,18 +41,32 @@ function Homepage() {
       };
 
       const [coreRes, flowRes, overflowRes, incomeRes] = await Promise.all([
-        axios.get("http://localhost:8080/expenses/allExpenses/core", { headers }),
-        axios.get("http://localhost:8080/expenses/allExpenses/flow", { headers }),
-        axios.get("http://localhost:8080/expenses/allExpenses/overflow", { headers }),
-        axios.get("http://localhost:8080/expenses/allExpenses/income", { headers }),
+        axios.get("http://localhost:8080/expenses/allExpenses/core", {
+          headers,
+        }),
+        axios.get("http://localhost:8080/expenses/allExpenses/flow", {
+          headers,
+        }),
+        axios.get("http://localhost:8080/expenses/allExpenses/overflow", {
+          headers,
+        }),
+        axios.get("http://localhost:8080/expenses/allExpenses/income", {
+          headers,
+        }),
       ]);
 
-      setCoreTotal(coreRes.data.reduce((sum, item) => sum + Number(item.amount), 0));
-      setFlowTotal(flowRes.data.reduce((sum, item) => sum + Number(item.amount), 0));
+      setCoreTotal(
+        coreRes.data.reduce((sum, item) => sum + Number(item.amount), 0)
+      );
+      setFlowTotal(
+        flowRes.data.reduce((sum, item) => sum + Number(item.amount), 0)
+      );
       setOverflowTotal(
         overflowRes.data.reduce((sum, item) => sum + Number(item.amount), 0)
       );
-      setIncomeTotal(incomeRes.data.reduce((sum, item) => sum + Number(item.amount), 0));
+      setIncomeTotal(
+        incomeRes.data.reduce((sum, item) => sum + Number(item.amount), 0)
+      );
     } catch (error) {
       console.error("Error fetching category totals:", error);
     }
@@ -54,9 +77,7 @@ function Homepage() {
       const response = await axios.get(
         `http://localhost:8080/expenses/byDate?startDate=${startDate}&endDate=${endDate}`,
         {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }
       );
       setExpenses(response.data);
@@ -85,7 +106,7 @@ function Homepage() {
     <div
       className="min-h-screen w-screen flex flex-col"
       style={{
-        backgroundImage: "url('assets/Check-BGCREDIT.jpg')",
+        backgroundImage: "url('/assets/Check-BGCREDIT.jpg')",
         backgroundRepeat: "no-repeat",
         backgroundPosition: "bottom",
         backgroundSize: "100% 100%",
@@ -112,7 +133,7 @@ function Homepage() {
         </button>
       </header>
 
-      <div className="flex justify-center mt-5">
+      <div className="flex justify-start mt-5 px-10">
         <select
           className="text-lg sm:text-xl p-2 rounded-md shadow-md"
           value={selectedCurrency}
@@ -126,46 +147,37 @@ function Homepage() {
         </select>
       </div>
 
-      <div className="grid grid-cols-4 gap-5 px-10 mt-10">
+      <div className="flex flex-col items-center mt-3 px-10">
         <div
           onClick={() => handleRedirect("/income")}
-          className="bg-[#212735] text-[#FAEAB6] p-5 rounded-lg shadow-lg text-center cursor-pointer hover:scale-105 transition transform"
+          className="bg-[#1F2937] text-[#FAEAB6] p-5 rounded-lg shadow-lg text-center cursor-pointer hover:scale-105 transition transform w-1/2"
         >
-          <h3 className="text-xl font-bold">Income</h3>
-          <p className="text-2xl mt-2">
+          <h3 className="text-2xl font-bold">Income</h3>
+          <p className="text-3xl mt-2">
             {formatNumberWithCurrency(incomeTotal, selectedCurrency)}
           </p>
         </div>
-        <div
-          onClick={() => handleRedirect("/core")}
-          className="bg-[#212735] text-[#FAEAB6] p-5 rounded-lg shadow-lg text-center cursor-pointer hover:scale-105 transition transform"
-        >
-          <h3 className="text-xl font-bold">Core</h3>
-          <p className="text-2xl mt-2">
-            {formatNumberWithCurrency(coreTotal, selectedCurrency)}
-          </p>
-        </div>
-        <div
-          onClick={() => handleRedirect("/flow")}
-          className="bg-[#212735] text-[#FAEAB6] p-5 rounded-lg shadow-lg text-center cursor-pointer hover:scale-105 transition transform"
-        >
-          <h3 className="text-xl font-bold">Flow</h3>
-          <p className="text-2xl mt-2">
-            {formatNumberWithCurrency(flowTotal, selectedCurrency)}
-          </p>
-        </div>
-        <div
-          onClick={() => handleRedirect("/overflow")}
-          className="bg-[#212735] text-[#FAEAB6] p-5 rounded-lg shadow-lg text-center cursor-pointer hover:scale-105 transition transform"
-        >
-          <h3 className="text-xl font-bold">Overflow</h3>
-          <p className="text-2xl mt-2">
-            {formatNumberWithCurrency(overflowTotal, selectedCurrency)}
-          </p>
+        <div className="grid grid-cols-3 gap-5 mt-10 w-3/4">
+          {[
+            { label: "Core", total: coreTotal, path: "/core" },
+            { label: "Flow", total: flowTotal, path: "/flow" },
+            { label: "Overflow", total: overflowTotal, path: "/overflow" },
+          ].map(({ label, total, path }) => (
+            <div
+              key={label}
+              onClick={() => handleRedirect(path)}
+              className="bg-[#212735] text-[#FAEAB6] p-5 rounded-lg shadow-lg text-center cursor-pointer hover:scale-105 transition transform"
+            >
+              <h3 className="text-xl font-bold">{label}</h3>
+              <p className="text-2xl mt-2">
+                {formatNumberWithCurrency(total, selectedCurrency)}
+              </p>
+            </div>
+          ))}
         </div>
       </div>
 
-      <aside className="w-full mt-10 px-10">
+      <aside>
         <ReactCalendar
           expenses={expenses}
           onDateChange={(date) => {
@@ -174,6 +186,11 @@ function Homepage() {
           }}
         />
       </aside>
+
+      {/* Include the Chart Component */}
+      <div className="absolute bottom-5 left-5 w-1/3 bg-[#212735] p-5 rounded-lg shadow-lg border border-[#C6B796]">
+
+      </div>
     </div>
   );
 }

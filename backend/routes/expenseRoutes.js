@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const verifyToken = require("../middleware/auth");
 
 const {
   getAllExpenses,
@@ -8,18 +9,19 @@ const {
   updateExpense,
   deleteExpense,
   deleteAllExpenses,
-  getExpensesByDate, // Import the date range method
-} = require("../controllers/expenseControllers.js");
+  getExpensesByDate,
+  getChartData, // Import the new controller
+} = require("../controllers/expenseControllers");
 
-const verifyToken = require("../middleware/auth.js");
+router.get("/byDate", verifyToken, getExpensesByDate);
+router.get("/allExpenses/:category", verifyToken, getAllExpenses);
+router.post("/addNewExpense", verifyToken, addNewExpense);
+router.get("/:id", verifyToken, getExpenseById);
+router.put("/updateExpense/:id", verifyToken, updateExpense);
+router.delete("/deleteExpense/:id", verifyToken, deleteExpense);
+router.delete("/deleteAllExpenses", verifyToken, deleteAllExpenses);
 
-// Routes require verify token
-router.get("/byDate", verifyToken, getExpensesByDate); // Fetch expenses by date range (place this BEFORE the dynamic :id route)
-router.get("/allExpenses/:category", verifyToken, getAllExpenses); // Retrieve all expenses data
-router.post("/addNewExpense", verifyToken, addNewExpense); // Add new expense
-router.get("/:id", verifyToken, getExpenseById); // Retrieve one expense by id
-router.put("/updateExpense/:id", verifyToken, updateExpense); // Update expense
-router.delete("/deleteExpense/:id", verifyToken, deleteExpense); // Delete one expense
-router.delete("/deleteAllExpenses", verifyToken, deleteAllExpenses); // Delete all expenses
+// New chart data route
+router.get("/chart-data", verifyToken, getChartData);
 
 module.exports = router;
