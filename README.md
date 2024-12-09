@@ -23,5 +23,6 @@ We aim to introduce monthly and yearly analysis, charts, and financial advice on
 
 # Additions
 - install multer to being able to upload image
-- sharp to make image smaller if the user uploads a large file
 - add the logic as middleware and then pass it to the route
+- add a route in server to fetch the image from the folder in the backend file
+- make image appears both in user profile and in navbar in home page via token(token stores the image name and the endpoint fetch the image from the folder)

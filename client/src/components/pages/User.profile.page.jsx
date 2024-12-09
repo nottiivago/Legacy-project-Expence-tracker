@@ -35,6 +35,7 @@ function UserProfilePage() {
     if (token) {
       const decodedToken = jwtDecode(token);
       const userId = decodedToken.id;
+      // console.log(token);
       fetchUserDetails(userId);
     }
   }, []);
@@ -47,11 +48,12 @@ function UserProfilePage() {
         },
       });
       setUserDetails(res.data.user);
+     
     } catch (error) {
       console.log('Failed to fetch user details.');
     }
   }
-
+  console.log(userDetails.image);
   async function handleSaveNewCredentials(e) {
     e.preventDefault();
     const { newPassword, newPasswordConfirmation, oldPassword } = editedUserData;
@@ -73,6 +75,7 @@ function UserProfilePage() {
       setEditedUserData(res.data.user);
       setEditForm(false);
       console.log('User updated successfully:', res.data);
+      alert(res.data.msg)
     } catch (error) {
       console.log('Failed to update user credentials:', error);
       setError('Failed to update credentials.');
@@ -83,6 +86,17 @@ function UserProfilePage() {
     <div className="user-profile-container">
       <div className="user-profile-card">
         <h2>{userDetails.firstName} {userDetails.lastName}</h2>
+
+
+
+{/** Display user image */}
+
+  <img 
+    src={`http://localhost:8080/uploads/${userDetails.image}`} 
+    alt={`${userDetails.firstName} ${userDetails.lastName}`} 
+    className="user-profile-image" 
+  />
+
 
 
         {error && <div className="error">{error}</div>}

@@ -8,6 +8,7 @@ const userSchema = new mongoose.Schema(
     email: { type: String, required: true, unique: true, lowerCase: true },
     password: { type: String, required: true },
     image: { type: String },
+    destination: { type: String },
   },
   {
     timestamps: true, // This option automatically adds 'createdAt' and 'updatedAt' fields to your documents

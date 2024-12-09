@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { jwtDecode } from 'jwt-decode';
+
 
 
 
@@ -9,11 +11,32 @@ function Homepage() {
   const [coreTotal, setCoreTotal] = useState(0);
   const [flowTotal, setFlowTotal] = useState(0);
   const [overflowTotal, setOverflowTotal] = useState(0);
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [profileImageName, setProfileImageName] =useState('');
+
 
   useEffect(() => {
     fetchCategoryTotals();
   }, []);
 
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      const decodedToken = jwtDecode(token);
+      console.log(token);
+      
+      setFirstName(decodedToken.firstName);
+      console.log(firstName);
+      setLastName(decodedToken.lastName);
+      console.log(lastName);
+      setProfileImageName(decodedToken.image);
+      console.log(profileImageName);
+
+    }
+  }, []);
+
+  
   async function fetchCategoryTotals() {
     try {
 
@@ -132,8 +155,15 @@ function Homepage() {
           </button>
         <button onClick={()=>handleRedirect("/userPage")}
           className="text-md sm:text-xl lg:text-2xl font-bold  text-white mr-3"> User page 
-          
         </button>
+        <div>
+        <img 
+    src={`http://localhost:8080/uploads/${profileImageName}`} 
+    alt={`${firstName} ${lastName}`} 
+    className="user-profile-image" 
+  />
+      <h1>Welcome, {firstName} {lastName}</h1>
+    </div>
         </header>
 
         <h1 className="flex justify-center pt-5 sm:pt-0 font-bold text-[#C6B796] whitespace-nowrap ">

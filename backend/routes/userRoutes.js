@@ -22,6 +22,11 @@ router.delete("/deleteAllUsers", verifyToken, deleteAllUsers); //===> delete all
 
 // public routes
 router.post("/login", logIn); //===> log in
-router.post("/register",upload.single('image'), addNewUser); //===> register
+router.post("/register",upload, addNewUser); //===> register
+
+
+
+
+
 
 module.exports = router;
