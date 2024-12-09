@@ -11,7 +11,7 @@ root.render(
   </React.StrictMode>,
  // document.getElementById('root') //------- commented it as it showed a warning in console that said that You passed a container to the second argument of root.render(...). You don't need to pass it again since you already passed it to create the root.
 
-  </React.StrictMode>
+  // </React.StrictMode>
 
 
 );
