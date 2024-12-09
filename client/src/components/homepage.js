@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { jwtDecode } from 'jwt-decode';
+
+
 
 import ReactCalendar from "./ReactCalendar";
 import ReactCharts from "./ReactCharts";
@@ -12,6 +15,10 @@ function Homepage() {
   const [coreTotal, setCoreTotal] = useState(0);
   const [flowTotal, setFlowTotal] = useState(0);
   const [overflowTotal, setOverflowTotal] = useState(0);
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [profileImageName, setProfileImageName] =useState('');
+
 
   const [customPercentage, setCustomPercentage] = useState(() => {
     const savedPercentage = localStorage.getItem("customPercentage");
@@ -52,6 +59,24 @@ function Homepage() {
   }, []);
 
   useEffect(() => {
+
+    const token = localStorage.getItem('token');
+    if (token) {
+      const decodedToken = jwtDecode(token);
+      console.log(token);
+      
+      setFirstName(decodedToken.firstName);
+      console.log(firstName);
+      setLastName(decodedToken.lastName);
+      console.log(lastName);
+      setProfileImageName(decodedToken.image);
+      console.log(profileImageName);
+
+    }
+  }, []);
+
+  
+
     // Save the custom percentage to local storage whenever it changes
     localStorage.setItem("customPercentage", customPercentage);
   }, [customPercentage]);
@@ -72,6 +97,7 @@ function Homepage() {
       );
     }
   }, [customPercentage, coreTotal, flowTotal, overflowTotal, incomeTotal]);
+
 
   async function fetchCategoryTotals() {
     try {
@@ -201,6 +227,53 @@ function Homepage() {
         backgroundAttachment: "fixed",
       }}
     >
+
+      <div
+        className="h-[148px] mx-auto bg-[#212735] relative shadow-sm "
+        // style={{
+        //   background:
+        //     "linear-gradient(to right, #000000 5%, #CBBD29 55%,  #000000 92%) ",
+        // }}
+      >
+        <header className="flex justify-end pt-2 ">
+        {/* <button onClick={()=>handleRedirect("/userPage")}
+          className="text-md sm:text-xl lg:text-2xl font-bold  text-white mr-3"> User page 
+          </button> */}
+        <div>
+        <img 
+    src={`http://localhost:8080/uploads/${profileImageName}`} 
+    alt={`${firstName} ${lastName}`} 
+    className="user-profile-image" 
+    style={{ cursor: 'pointer' }} 
+    onClick={()=>handleRedirect("/userPage")}
+  />
+      <h1 style={{color:'white'}} onClick={()=>handleRedirect("/userPage")}>Welcome, {firstName} {lastName}</h1>
+    </div>
+          <button
+            onClick={handleLogOut}
+            className="text-md sm:text-xl lg:text-2xl font-bold  text-white mr-3"
+          >
+            Logout
+          </button>
+        </header>
+
+        <h1 className="flex justify-center pt-5 sm:pt-0 font-bold text-[#C6B796] whitespace-nowrap ">
+          <span className="text-6xl sm:text-7xl   px-1">
+            Cash
+            <span className="inline-block h-[45px] w-[45px] sm:w-[57px] sm:h-[57px]  mx-1 overflow-hidden rounded-full scale-110">
+              <img
+                src="/assets/Logo1.webp"
+                alt="logo"
+                className="w-full h-full object-cover object-center"
+              />
+            </span>
+            ver
+          </span>
+          <span className="  transform ml-[-20px] sm:ml-[-25px] pt-12 sm:pt-16 text-xl font-bold text-[#FAEAB6] ">
+            F<span className="text-white">L</span>O
+            <span className="text-white">W</span>
+          </span>
+
 
       <header className="flex justify-between items-center px-5 py-3 bg-[#212735] shadow-md">
         <h1 className="text-[#C6B796] text-4xl font-bold flex items-center">
