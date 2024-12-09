@@ -2,20 +2,52 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-
 function Homepage() {
   const [incomeTotal, setIncomeTotal] = useState(0);
   const [coreTotal, setCoreTotal] = useState(0);
   const [flowTotal, setFlowTotal] = useState(0);
   const [overflowTotal, setOverflowTotal] = useState(0);
+  const [customPercentage, setCustomPercentage] = useState(() => {
+    const savedPercentage = localStorage.getItem("customPercentage");
+    return savedPercentage ? Number(savedPercentage) : 80;
+  });
 
   useEffect(() => {
     fetchCategoryTotals();
   }, []);
 
+  useEffect(() => {
+    // Retrieve the custom percentage from local storage when the component mounts
+    const savedPercentage = localStorage.getItem("customPercentage");
+    if (savedPercentage) {
+      setCustomPercentage(Number(savedPercentage));
+    }
+  }, []);
+
+  useEffect(() => {
+    // Save the custom percentage to local storage whenever it changes
+    localStorage.setItem("customPercentage", customPercentage);
+  }, [customPercentage]);
+
+  useEffect(() => {
+    // Check whenever customPercentage changes
+    const totalExpenses = coreTotal + flowTotal + overflowTotal;
+    const threshold = incomeTotal * (customPercentage / 100);
+
+    if (totalExpenses > incomeTotal) {
+      alert(
+        "Warning: Your total expenses are above your income. Please adjust your budget."
+      );
+    } else if (totalExpenses > threshold) {
+      const remainings = 100 - customPercentage;
+      alert(
+        `Warning: Your expenses are above ${customPercentage}% of your income. Be sure to put ${remainings}% of your income in the saving!`
+      );
+    }
+  }, [customPercentage, coreTotal, flowTotal, overflowTotal, incomeTotal]);
+
   async function fetchCategoryTotals() {
     try {
-
       const coreRes = await axios.get(
         "http://localhost:8080/expenses/allExpenses/core",
 
@@ -54,7 +86,6 @@ function Homepage() {
         }
       );
 
-
       const coreTotal = coreRes.data.reduce(
         (sum, item) => sum + Number(item.amount),
         0
@@ -64,7 +95,6 @@ function Homepage() {
         0
       );
       const overflowTotal = overflowRes.data.reduce(
-
         (sum, item) => sum + Number(item.amount),
         0
       );
@@ -72,7 +102,6 @@ function Homepage() {
         (sum, item) => sum + Number(item.amount),
         0
       );
-
 
       setCoreTotal(coreTotal);
       setFlowTotal(flowTotal);
@@ -103,11 +132,9 @@ function Homepage() {
   //   };
 
   return (
-
     <div
       className="min-h-screen w-screen min-w-screen overflow-hidden "
       style={{
-        
         backgroundImage: "url('assets/Check-BGCREDIT.jpg')",
         backgroundRepeat: "no-repeat",
         backgroundPosition: "bottom",
@@ -115,13 +142,13 @@ function Homepage() {
         backgroundAttachment: "fixed",
       }}
     >
-      <div
+      <div 
         className="h-[148px] mx-auto bg-[#212735] relative shadow-sm "
         // style={{
         //   background:
         //     "linear-gradient(to right, #000000 5%, #CBBD29 55%,  #000000 92%) ",
         // }}
-      >
+        >
         <header className="flex justify-end pt-2 ">
           <button
             onClick={handleLogOut}
@@ -131,57 +158,72 @@ function Homepage() {
           </button>
         </header>
 
-        <h1 className="flex justify-center pt-5 sm:pt-0 font-bold text-[#C6B796] whitespace-nowrap ">
-          <span className="text-6xl sm:text-7xl   px-1">
-            Cash
-            <span className="inline-block h-[45px] w-[45px] sm:w-[57px] sm:h-[57px]  mx-1 overflow-hidden rounded-full scale-110">
-              <img
-                src="/assets/Logo1.webp"
-                alt="logo"
-                className="w-full h-full object-cover object-center"
-              />
+        <div className="flex justify-evenly">
+          <div className="flex items-center gap-3">
+            <h1 className="text-[#C6B796] text-start mb-2">
+              The percentage of income
+              at which<br /> you want to
+              receive a warning.
+            </h1>
+            <input
+              type="number"
+              value={customPercentage}
+              onChange={(e) => setCustomPercentage(e.target.value)}
+              min="0"
+              max="100"
+              className="bg-[#C6B796] w-12 rounded-lg border border-[#101e40] text-center sm:text-xl lg:text-2xl placeholder-[#881348]"
+              placeholder="Set warning percentage"
+            />
+            <h1 className="text-[#C6B796] text-3xl">%</h1>
+          </div>
+
+          <h1 className="flex justify-center pt-5 sm:pt-0 font-bold text-[#C6B796] whitespace-nowrap ">
+            <span className="text-6xl sm:text-7xl px-1">
+              Cash
+              <span className="inline-block h-[45px] w-[45px] sm:w-[57px] sm:h-[57px]  mx-1 overflow-hidden rounded-full scale-110">
+                <img
+                  src="/assets/Logo1.webp"
+                  alt="logo"
+                  className="w-full h-full object-cover object-center"
+                />
+              </span>
+              ver
             </span>
-            ver
-          </span>
-          <span className="  transform ml-[-20px] sm:ml-[-25px] pt-12 sm:pt-16 text-xl font-bold text-[#FAEAB6] ">
-            F<span className="text-white">L</span>O
-            <span className="text-white">W</span>
-          </span>
-
-        </h1>
+            <span className="  transform ml-[-20px] sm:ml-[-25px] pt-12 sm:pt-16 text-xl font-bold text-[#FAEAB6] ">
+              F<span className="text-white">L</span>O
+              <span className="text-white">W</span>
+            </span>
+          </h1>
+        </div>
       </div>
-
-
       <section
         onClick={() => handleRedirect("/income")}
         className="mt-3 lg:mt-7 p-2  ml-5 inline-flex justify-start shadow-[10px_0_15px_rgba(0,0,0,0.3)]  text-[#C6B796] hover:text-[#FAEAB6] rounded-full  hover:scale-110  bg-[#212735] backdrop-blur-md bg-transparent"
-        >
+      >
         <h4 className="pl-2 flex text-4xl sm:text-5xl font-bold italic  text-nowrap">
           Income: {incomeTotal}
         </h4>
       </section>
 
       <div className=" flex pt-5 lg:mt-7">
-      <img
-            src="/assets/coins-solid.svg"
-            alt="back"
-            className="w-6 h-6 ml-7 mt-[5px] "
-          />
+        <img
+          src="/assets/coins-solid.svg"
+          alt="back"
+          className="w-6 h-6 ml-7 mt-[5px] "
+        />
         <h4 className="text-3xl sm:text-4xl px-1   justify-start h-full  rounded-md   underline  font-bold text-[#101e40] ">
           Expenses
-
         </h4>
         <img
-            src="/assets/coins-solid.svg"
-            alt="back"
-            className="w-6 h-6  mt-[5px]"
-          />
+          src="/assets/coins-solid.svg"
+          alt="back"
+          className="w-6 h-6  mt-[5px]"
+        />
       </div>
-
 
       <section
         onClick={() => handleRedirect("/core")}
-       className="mt-3 lg:mt-10 p-2  ml-5 inline-flex justify-start shadow-[10px_0_15px_rgba(0,0,0,0.3)] border-[#212735] text-[#C6B796] hover:text-[#FAEAB6] rounded-full  hover:scale-110  bg-[#212735] backdrop-blur-md bg-transparent"
+        className="mt-3 lg:mt-10 p-2  ml-5 inline-flex justify-start shadow-[10px_0_15px_rgba(0,0,0,0.3)] border-[#212735] text-[#C6B796] hover:text-[#FAEAB6] rounded-full  hover:scale-110  bg-[#212735] backdrop-blur-md bg-transparent"
         // style={{
         //   background:
         //     "linear-gradient(#000000 10%, #23A461 25%, #000000 40%, #000000 58%, #23A461 74% , #000000 87%)",
@@ -189,7 +231,6 @@ function Homepage() {
       >
         <h4 className="font-bold text-4xl sm:text-5xl italic text-nowrap">
           Core:<span className="hover:text-[]">&nbsp;{coreTotal}</span>
-
         </h4>
       </section>
 
@@ -210,7 +251,7 @@ function Homepage() {
       {/* #974E4E // max-w-[350px] sm:max-w-[500px]*/}
       <section
         onClick={() => handleRedirect("/overflow")}
-       className="mt-3 lg:mt-7 p-2 ml-5 inline-flex justify-start shadow-[10px_0_15px_rgba(0,0,0,0.3)] border-[#212735] text-[#C6B796] hover:text-[#FAEAB6] rounded-full  hover:scale-110  bg-[#212735] backdrop-blur-md bg-transparent"
+        className="mt-3 lg:mt-7 p-2 ml-5 inline-flex justify-start shadow-[10px_0_15px_rgba(0,0,0,0.3)] border-[#212735] text-[#C6B796] hover:text-[#FAEAB6] rounded-full  hover:scale-110  bg-[#212735] backdrop-blur-md bg-transparent"
         // style={{
         //   background:
         //     "linear-gradient(#000000 10%, #974E4E 25%, #000000 40%, #000000 58%, #974E4E 74% , #000000 87%)",
