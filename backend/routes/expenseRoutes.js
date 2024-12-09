@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const verifyToken = require("../middleware/auth");
 
 const {
   getAllExpenses,
@@ -8,15 +9,19 @@ const {
   updateExpense,
   deleteExpense,
   deleteAllExpenses,
-} = require("../controllers/expenseControllers.js");
-const verifyToken = require("../middleware/auth.js");
+  getExpensesByDate,
+  getChartData, // Import the new controller
+} = require("../controllers/expenseControllers");
 
-// routes require verify token
-router.get("/allExpenses/:category", verifyToken, getAllExpenses); //===> to retrieve all expenses data
-router.post("/addNewExpense", verifyToken, addNewExpense); //===> add new expense
-router.get("/:id", verifyToken, getExpenseById); //===> to retrieve one expense by id
-router.put("/updateExpense/:id", verifyToken, updateExpense); //===> update expense
-router.delete("/deleteExpense/:id", verifyToken, deleteExpense); //===> delete one expense
-router.delete("/deleteAllExpenses", verifyToken, deleteAllExpenses); //===> delete all expenses
+router.get("/byDate", verifyToken, getExpensesByDate);
+router.get("/allExpenses/:category", verifyToken, getAllExpenses);
+router.post("/addNewExpense", verifyToken, addNewExpense);
+router.get("/:id", verifyToken, getExpenseById);
+router.put("/updateExpense/:id", verifyToken, updateExpense);
+router.delete("/deleteExpense/:id", verifyToken, deleteExpense);
+router.delete("/deleteAllExpenses", verifyToken, deleteAllExpenses);
+
+// New chart data route
+router.get("/chart-data", verifyToken, getChartData);
 
 module.exports = router;

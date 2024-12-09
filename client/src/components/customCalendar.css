@@ -1,0 +1,126 @@
+/* Calendar Container */
+.react-calendar {
+    width: 100%;
+    max-width: 320px;
+    background-color: #212735;
+    color: #FAEAB6;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    padding: 15px;
+    font-family: Arial, sans-serif;
+  }
+  
+  /* Calendar Header */
+  .react-calendar__navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  .react-calendar__navigation button {
+    background-color: transparent;
+    color: #FAEAB6;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  .react-calendar__navigation button:hover {
+    transform: scale(1.1);
+  }
+  
+  /* Days of the Week */
+  .react-calendar__month-view__weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  
+  .react-calendar__month-view__weekdays__weekday {
+    color: #C6B796;
+    font-weight: bold;
+  }
+  
+  /* Days */
+  .react-calendar__tile {
+    background-color: #212735;
+    color: #FAEAB6;
+    border-radius: 5px;
+    text-align: center;
+    padding: 10px;
+    margin: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.2s;
+  }
+  
+  .react-calendar__tile--active {
+    background-color: #101e40;
+    color: #FAEAB6;
+  }
+  
+  .react-calendar__tile:hover {
+    background-color: #101e40;
+    transform: scale(1.1);
+  }
+  
+  /* Today Highlight */
+  .react-calendar__tile--now {
+    background-color: #FAEAB6;
+    color: #212735;
+    font-weight: bold;
+  }
+  
+  /* Calendar Dot for Expense Days */
+  .react-calendar__tile .dot {
+    height: 8px;
+    width: 8px;
+    background-color: #FAEAB6;
+    border-radius: 50%;
+    margin: 2px auto;
+    display: inline-block;
+  }
+  
+  /* Enhance active date */
+  .react-calendar__tile--active {
+    background-color: #FAEAB6 !important;
+    color: #101e40 !important;
+  }
+  
+  /* Calendar Section Container */
+  .calendar-container {
+    background: rgba(33, 39, 53, 0.9);
+    padding: 10px;
+    border-radius: 10px;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  }
+  
+  /* Calendar Title */
+  .calendar-container h3 {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #FAEAB6;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+  }
+  
+  /* Selected Date Info */
+  .selected-date-info h4 {
+    font-size: 1.2rem;
+    color: #FAEAB6;
+  }
+  
+  .selected-date-info p {
+    font-size: 1rem;
+    color: #C6B796;
+    font-style: italic;
+    text-align: center;
+  }
+  
